@@ -40,20 +40,35 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted to-background p-4">
-      <Card className="w-full max-w-md shadow-lg border-border">
-        <CardHeader className="text-center pb-2">
-          {/* TCS Logo */}
-          <div className="flex flex-col items-center gap-4 mb-4">
-            <div className="w-20 h-20 bg-primary rounded-xl flex items-center justify-center shadow-md">
-              <span className="text-primary-foreground font-bold text-2xl">TCS</span>
+    <div className="min-h-screen flex flex-col bg-background p-4 relative">
+      {/* Top Left Title */}
+      <div className="absolute top-6 left-6">
+        <h1 className="text-xl font-semibold text-primary">Data Reliability Assistant</h1>
+      </div>
+
+      {/* Bottom Right TCS Badge */}
+      <div className="absolute bottom-6 right-6">
+        <div className="w-14 h-14 bg-primary rounded-lg flex items-center justify-center shadow-lg">
+          <span className="text-primary-foreground font-bold text-lg">TCS</span>
+        </div>
+      </div>
+
+      {/* Centered Card */}
+      <div className="flex-1 flex items-center justify-center">
+        <Card className="w-full max-w-md shadow-lg border-border">
+          <CardHeader className="text-center pb-2">
+            {/* TCS Logo */}
+            <div className="flex flex-col items-center gap-4 mb-4">
+              <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center shadow-md">
+                <span className="text-primary-foreground font-bold text-xl">TCS</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Data Reliability Assistant</h1>
+                <p className="text-sm text-muted-foreground">TCS Interactive</p>
+                <p className="text-sm text-muted-foreground mt-1">Sign in to your account</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Data Reliability Assistant</h1>
-              <p className="text-sm text-muted-foreground mt-1">Sign in to continue</p>
-            </div>
-          </div>
-        </CardHeader>
+          </CardHeader>
         
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -118,8 +133,9 @@ const SignIn = () => {
               <p><span className="font-medium">Analyst:</span> analyst@tcs.com / analyst123</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
