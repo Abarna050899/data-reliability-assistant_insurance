@@ -6,6 +6,8 @@ import AppHeader from "@/components/AppHeader";
 import AppSidebar from "@/components/AppSidebar";
 import AppFooter from "@/components/AppFooter";
 import DataTable from "@/components/DataTable";
+import ReliabilityKPIReport from "@/components/ReliabilityKPIReport";
+import CleanedDataView from "@/components/CleanedDataView";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +21,8 @@ import {
 import { Upload, Send, Trash2, FileSpreadsheet, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+type QueryMode = "preview" | "kpi_report" | "clean_data" | null;
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
@@ -28,6 +32,7 @@ const Dashboard = () => {
   const [promptText, setPromptText] = useState("");
   const [showResults, setShowResults] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [queryMode, setQueryMode] = useState<QueryMode>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -55,12 +60,32 @@ const Dashboard = () => {
       });
       return;
     }
+
+    // Determine query mode based on prompt text
+    const query = promptText.toLowerCase().trim();
+    
+    if (query.startsWith("i've uploaded a file") || query.startsWith("i have uploaded a file") || query === "") {
+      setQueryMode("preview");
+    } else if (query.startsWith("please generate data reliability report") || query.includes("reliability report")) {
+      setQueryMode("kpi_report");
+    } else if (query.startsWith("please remove records") || query.includes("remove null") || query.includes("clean data")) {
+      setQueryMode("clean_data");
+    } else {
+      // Default to preview mode
+      setQueryMode("preview");
+    }
+
     setShowResults(true);
   };
 
   const handleClear = () => {
     setPromptText("");
     setShowResults(false);
+    setQueryMode(null);
+  };
+
+  const handleReRunReport = () => {
+    setQueryMode("kpi_report");
   };
 
   if (!isAuthenticated) {
@@ -139,25 +164,65 @@ const Dashboard = () => {
             {/* Results Section - Only shown after Submit */}
             {showResults && (
               <div className="space-y-6 animate-slide-up">
-                {/* Preview of Uploaded Data */}
-                <Card className="shadow-sm">
-                  <CardContent className="pt-6">
-                    <DataTable
-                      title="Preview of Uploaded Data"
-                      data={syntheticTestData}
-                    />
-                  </CardContent>
-                </Card>
+                {/* Query indicator */}
+                {promptText && (
+                  <Card className="shadow-sm bg-muted/30">
+                    <CardContent className="pt-4 pb-4">
+                      <p className="text-sm text-muted-foreground">
+                        <span className="font-medium text-foreground">User Query:</span> {promptText}
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
 
-                {/* Data Reliability Check */}
-                <Card className="shadow-sm">
-                  <CardContent className="pt-6">
-                    <DataTable
-                      title="Data Reliability Check"
-                      data={dataReliabilityCheckData}
-                    />
-                  </CardContent>
-                </Card>
+                {/* Preview Mode - Default or "uploaded file" query */}
+                {(queryMode === "preview" || queryMode === null) && (
+                  <>
+                    {/* Preview of Uploaded Data */}
+                    <Card className="shadow-sm">
+                      <CardContent className="pt-6">
+                        <DataTable
+                          title="Preview of Uploaded Data"
+                          data={syntheticTestData}
+                        />
+                      </CardContent>
+                    </Card>
+
+                    {/* Data Reliability Check */}
+                    <Card className="shadow-sm">
+                      <CardContent className="pt-6">
+                        <DataTable
+                          title="Data Reliability Check"
+                          data={dataReliabilityCheckData}
+                        />
+                      </CardContent>
+                    </Card>
+                  </>
+                )}
+
+                {/* KPI Report Mode */}
+                {queryMode === "kpi_report" && (
+                  <Card className="shadow-sm">
+                    <CardContent className="pt-6">
+                      <ReliabilityKPIReport
+                        data={syntheticTestData}
+                        title="Data Reliability KPIs"
+                      />
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Clean Data Mode */}
+                {queryMode === "clean_data" && (
+                  <Card className="shadow-sm">
+                    <CardContent className="pt-6">
+                      <CleanedDataView
+                        originalData={syntheticTestData}
+                        onReRunReport={handleReRunReport}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             )}
           </div>
