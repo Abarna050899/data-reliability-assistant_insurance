@@ -67,8 +67,8 @@ const AppSidebar = () => {
             <span className="text-primary-foreground font-bold text-sm">TCS</span>
           </div>
           <div>
-            <p className="text-sm font-semibold text-foreground">TCS Data Discovery</p>
-            <p className="text-xs text-muted-foreground">Enterprise Edition</p>
+            <p className="text-sm font-semibold text-foreground">Data Reliability Assistant</p>
+            <p className="text-xs text-muted-foreground">An Agentic approach for ensuring reliable marketing data.</p>
           </div>
         </div>
       </div>
@@ -81,18 +81,6 @@ const AppSidebar = () => {
             <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Admin
             </p>
-            <SidebarItem 
-              icon={<Users className="w-4 h-4" />} 
-              label="User Management" 
-            />
-            <SidebarItem 
-              icon={<Shield className="w-4 h-4" />} 
-              label="Access Control" 
-            />
-            <SidebarItem 
-              icon={<Settings className="w-4 h-4" />} 
-              label="Settings" 
-            />
           </div>
         )}
 
@@ -110,10 +98,6 @@ const AppSidebar = () => {
               icon={<FileCheck className="w-4 h-4" />} 
               label="Data Reliability Assistant"
               active={true}
-            />
-            <SidebarItem 
-              icon={<BarChart3 className="w-4 h-4" />} 
-              label="Quality Reports"
             />
           </SidebarItem>
         </div>
