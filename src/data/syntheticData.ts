@@ -11,7 +11,7 @@ export const syntheticTestData = [
   { customer_id: "CUST0008", age: 33.0, purchase_history: "Non-Travel", frequent_traveller: false, card_type: "Platinum", account_created_date: "2017-09-05 00:00:00", number_of_click: 296, move_to_cart: true, stay_on_the_product: false, emotion: "Indifferent", Title: "Travel Rewards", Score: 60.0, Post: "I love travelling and exploring new places.", URL: "https://www.reddit.com/r/travel/7568" },
   { customer_id: "CUST0009", age: 52.0, purchase_history: "Car Rentals", frequent_traveller: false, card_type: "Platinum", account_created_date: "2021-02-11 00:00:00", number_of_click: 105, move_to_cart: true, stay_on_the_product: true, emotion: "Happy", Title: "Travel Rewards", Score: 94.0, Post: "I love travelling and exploring new places.", URL: "https://www.reddit.com/r/travel/9568" },
   { customer_id: "CUST0010", age: 54.0, purchase_history: "Flights", frequent_traveller: false, card_type: "Gold", account_created_date: "2015-07-27 00:00:00", number_of_click: 298, move_to_cart: true, stay_on_the_product: false, emotion: "Indifferent", Title: "Travel Rewards", Score: 69.0, Post: "I love travelling and exploring new places.", URL: "https://www.reddit.com/r/travel/3125" },
-  { customer_id: "CUST0011", age: 42.0, purchase_history: null, frequent_traveller: false, card_type: "Silver", account_created_date: "2015-07-22 00:00:00", number_of_click: 215, move_to_cart: true, stay_on_the_product: false, emotion: "Neutral", Title: "Travel Rewards", Score: 120.0, Post: "I love travelling and exploring new places.", URL: "https://www.reddit.com/r/travel/2283" },
+  { customer_id: "CUST0011", age: 42.0, purchase_history: "Non-Travel", frequent_traveller: false, card_type: "Silver", account_created_date: "2015-07-22 00:00:00", number_of_click: 215, move_to_cart: true, stay_on_the_product: false, emotion: "Neutral", Title: "Travel Rewards", Score: 120.0, Post: "I love travelling and exploring new places.", URL: "https://www.reddit.com/r/travel/2283" },
   { customer_id: "CUST0012", age: 62.0, purchase_history: "Flights", frequent_traveller: false, card_type: "Gold", account_created_date: "2020-02-19 00:00:00", number_of_click: 459, move_to_cart: false, stay_on_the_product: false, emotion: "Excited", Title: "Travel Rewards", Score: 24.0, Post: "I love travelling and exploring new places.", URL: "https://www.reddit.com/r/travel/1298" },
   { customer_id: "CUST0013", age: 41.0, purchase_history: "Hotels", frequent_traveller: true, card_type: "Platinum", account_created_date: "2020-05-19 00:00:00", number_of_click: 171, move_to_cart: false, stay_on_the_product: true, emotion: "Indifferent", Title: "Travel Rewards", Score: 7.0, Post: "I love travelling and exploring new places.", URL: "https://www.reddit.com/r/travel/3768" },
   { customer_id: "CUST0014", age: 41.0, purchase_history: "Car Rentals", frequent_traveller: true, card_type: "Basic", account_created_date: "2022-01-12 00:00:00", number_of_click: 356, move_to_cart: false, stay_on_the_product: false, emotion: "Neutral", Title: "Travel Rewards", Score: 29.0, Post: "I love travelling and exploring new places.", URL: "https://www.reddit.com/r/travel/9671" },
@@ -112,19 +112,19 @@ export const syntheticTestData = [
 // Data Reliability Check - exactly 12 records as specified
 
 export const dataReliabilityCheckData = [
-  { column_name: "customer_id", data_type: "String", null_check_eligibility: "Yes", format_check: "String", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "age", data_type: "Float64", null_check_eligibility: "Yes", format_check: "Numeric", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "purchase_history", data_type: "String", null_check_eligibility: "No", format_check: "String", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "frequent_traveller", data_type: "Boolean", null_check_eligibility: "Yes", format_check: "Boolean", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "card_type", data_type: "String", null_check_eligibility: "Yes", format_check: "String", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "account_created_date", data_type: "Date", null_check_eligibility: "Yes", format_check: "Datetime", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "number_of_click", data_type: "Int64", null_check_eligibility: "Yes", format_check: "Numeric", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "move_to_cart", data_type: "Boolean", null_check_eligibility: "Yes", format_check: "Boolean", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "stay_on_the_product", data_type: "Boolean", null_check_eligibility: "Yes", format_check: "Boolean", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "emotion", data_type: "String", null_check_eligibility: "No", format_check: "String", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "Title", data_type: "String", null_check_eligibility: "Yes", format_check: "String", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "Score", data_type: "Float64", null_check_eligibility: "Yes", format_check: "Numeric", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "Post", data_type: "String", null_check_eligibility: "No", format_check: "String", completeness: "100%", accuracy: "100%", overall_score: "100%" },
-  { column_name: "URL", data_type: "String", null_check_eligibility: "No", format_check: "String", completeness: "100%", accuracy: "100%", overall_score: "100%" }
+  { column_name: "customer_id", data_type: "String", null_check_eligibility: "Yes", format_check: "String" },
+  { column_name: "age", data_type: "Float64", null_check_eligibility: "Yes", format_check: "Numeric"},
+  { column_name: "purchase_history", data_type: "String", null_check_eligibility: "No", format_check: "String" },
+  { column_name: "frequent_traveller", data_type: "Boolean", null_check_eligibility: "Yes", format_check: "Boolean"},
+  { column_name: "card_type", data_type: "String", null_check_eligibility: "Yes", format_check: "String"},
+  { column_name: "account_created_date", data_type: "Date", null_check_eligibility: "Yes", format_check: "Datetime"},
+  { column_name: "number_of_click", data_type: "Int64", null_check_eligibility: "Yes", format_check: "Numeric"},
+  { column_name: "move_to_cart", data_type: "Boolean", null_check_eligibility: "Yes", format_check: "Boolean"},
+  { column_name: "stay_on_the_product", data_type: "Boolean", null_check_eligibility: "Yes", format_check: "Boolean"},
+  { column_name: "emotion", data_type: "String", null_check_eligibility: "No", format_check: "String"},
+  { column_name: "Title", data_type: "String", null_check_eligibility: "Yes", format_check: "String"},
+  { column_name: "Score", data_type: "Float64", null_check_eligibility: "Yes", format_check: "Numeric"},
+  { column_name: "Post", data_type: "String", null_check_eligibility: "No", format_check: "String"},
+  { column_name: "URL", data_type: "String", null_check_eligibility: "No", format_check: "String"}
 ];
 
