@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, Send, Trash2, FileSpreadsheet, CheckCircle2 } from "lucide-react";
+import { Upload, Send, Trash2, FileSpreadsheet, CheckCircle2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type QueryMode = "preview" | "kpi_report" | "clean_data";
@@ -38,6 +38,8 @@ const Dashboard = () => {
   const [promptText, setPromptText] = useState("");
   const [showWelcome, setShowWelcome] = useState(true);
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState("");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -67,7 +69,9 @@ const Dashboard = () => {
     return "preview";
   };
 
-  const handleSubmit = () => {
+  const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+  const handleSubmit = async () => {
     if (!selectedFile) {
       toast({
         title: "No file selected",
@@ -86,15 +90,33 @@ const Dashboard = () => {
       return;
     }
 
-    const mode = determineQueryMode(promptText);
+    const queryText = promptText;
+    setPromptText("");
+    setIsProcessing(true);
+
+    // Processing your query...
+    setProcessingStatus("Processing your query...");
+    await sleep(2000);
+
+    // Supervisor agent started...
+    setProcessingStatus("Supervisor agent started...");
+    await sleep(2000);
+
+    // Collaborator agent selected and kicked...
+    setProcessingStatus("Collaborator agent selected and kicked...");
+    await sleep(2000);
+
+    setIsProcessing(false);
+    setProcessingStatus("");
+
+    const mode = determineQueryMode(queryText);
     const newMessage: ChatMessage = {
-      query: promptText,
+      query: queryText,
       mode,
       timestamp: new Date(),
     };
 
     setChatHistory((prev) => [...prev, newMessage]);
-    setPromptText("");
   };
 
   const handleClear = () => {
@@ -102,27 +124,18 @@ const Dashboard = () => {
     setChatHistory([]);
   };
 
-  const handleReRunReport = () => {
-    const newMessage: ChatMessage = {
-      query: "Re-running reliability report on cleaned data",
-      mode: "kpi_report",
-      timestamp: new Date(),
-    };
-    setChatHistory((prev) => [...prev, newMessage]);
-  };
-
   if (!isAuthenticated) {
     return null;
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background pb-14">
       <AppHeader />
       
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1">
         <AppSidebar />
         
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-6 overflow-auto ml-64">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* File Upload Section */}
             <Card className="shadow-sm">
@@ -172,15 +185,23 @@ const Dashboard = () => {
                 />
 
                 <div className="flex items-center gap-3">
-                  <Button onClick={handleSubmit} className="gap-2">
-                    <Send className="w-4 h-4" />
+                  <Button onClick={handleSubmit} className="gap-2" disabled={isProcessing}>
+                    {isProcessing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                     Submit
                   </Button>
-                  <Button variant="secondary" onClick={handleClear} className="gap-2">
+                  <Button variant="secondary" onClick={handleClear} className="gap-2" disabled={isProcessing}>
                     <Trash2 className="w-4 h-4" />
                     Clear
                   </Button>
                 </div>
+
+                {/* Processing Status */}
+                {isProcessing && (
+                  <div className="flex items-center gap-3 p-3 bg-primary/10 border border-primary/30 rounded-lg animate-fade-in">
+                    <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                    <span className="text-sm font-medium text-primary">{processingStatus}</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -237,7 +258,6 @@ const Dashboard = () => {
                         <CardContent className="pt-6">
                           <CleanedDataView
                             originalData={syntheticTestData}
-                            onReRunReport={handleReRunReport}
                           />
                         </CardContent>
                       </Card>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, RotateCcw } from "lucide-react";
+import { Download, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -12,10 +12,9 @@ import DataTable from "./DataTable";
 
 interface CleanedDataViewProps {
   originalData: Record<string, unknown>[];
-  onReRunReport?: () => void;
 }
 
-const CleanedDataView = ({ originalData, onReRunReport }: CleanedDataViewProps) => {
+const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
   const [downloadFormat, setDownloadFormat] = useState<string>("CSV");
 
   // Clean data: remove rows with null/empty values
@@ -94,12 +93,17 @@ const CleanedDataView = ({ originalData, onReRunReport }: CleanedDataViewProps) 
           </Button>
         </div>
 
-        {onReRunReport && (
-          <Button variant="secondary" onClick={onReRunReport} className="gap-2">
-            <RotateCcw className="w-4 h-4" />
-            Re-Run Reliability Report
-          </Button>
-        )}
+        <Button 
+          variant="secondary" 
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.location.reload();
+          }} 
+          className="gap-2"
+        >
+          <Home className="w-4 h-4" />
+          Home
+        </Button>
       </div>
     </div>
   );
