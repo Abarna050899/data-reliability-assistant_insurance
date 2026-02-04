@@ -62,12 +62,12 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
 
   const TableContent = ({ zoomed = false }: { zoomed?: boolean }) => (
     <div className={cn("border border-border rounded-lg overflow-hidden", zoomed && "h-full")}>
-      <ScrollArea className={cn("w-full", zoomed ? "h-[70vh]" : "h-[350px]")}>
+      <div className={cn("w-full overflow-x-auto overflow-y-auto", zoomed ? "h-[70vh]" : "h-[350px]")}>
         <div className="min-w-max">
           <Table>
             <TableHeader>
               <TableRow className="bg-primary/5">
-                <TableHead className="w-12 font-semibold text-foreground sticky left-0 bg-primary/5">#</TableHead>
+                <TableHead className="w-12 font-semibold text-foreground sticky left-0 bg-primary/5 z-10">#</TableHead>
                 {columns.map((col) => (
                   <TableHead 
                     key={col} 
@@ -81,7 +81,7 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
             <TableBody>
               {filteredData.map((row, idx) => (
                 <TableRow key={idx} className="hover:bg-muted/30 transition-colors">
-                  <TableCell className="text-muted-foreground font-mono text-sm sticky left-0 bg-card">
+                  <TableCell className="text-muted-foreground font-mono text-sm sticky left-0 bg-card z-10">
                     {idx + 1}
                   </TableCell>
                   {columns.map((col) => (
@@ -98,7 +98,7 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
             </TableBody>
           </Table>
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 

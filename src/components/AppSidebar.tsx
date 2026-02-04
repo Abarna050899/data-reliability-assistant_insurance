@@ -4,13 +4,10 @@ import {
   ChevronDown, 
   ChevronRight, 
   Database, 
-  Shield, 
-  Users, 
-  Settings,
-  BarChart3,
   FileCheck
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import tcsLogoBlack from "@/assets/tcs-logo-black.png";
 
 interface SidebarItemProps {
   icon: React.ReactNode;
@@ -59,12 +56,12 @@ const AppSidebar = () => {
   const isAdmin = user?.role === "admin";
 
   return (
-    <aside className="w-64 bg-card border-r border-border flex flex-col h-[calc(100vh-3.5rem-3.5rem)]">
+    <aside className="w-64 bg-card border-r border-border flex flex-col h-[calc(100vh-3.5rem-3.5rem)] sticky top-14 overflow-y-auto">
       {/* TCS Logo Area */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">TCS</span>
+          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center p-1">
+            <img src={tcsLogoBlack} alt="TCS Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <p className="text-sm font-semibold text-foreground">Data Reliability Assistant</p>

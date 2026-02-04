@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import tcsLogoBlack from "@/assets/tcs-logo-black.png";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -46,10 +47,10 @@ const SignIn = () => {
         <h1 className="text-xl font-semibold text-primary">Data Reliability Assistant</h1>
       </div>
 
-      {/* Bottom Right TCS Badge */}
+      {/* Bottom Right TCS Logo */}
       <div className="absolute bottom-6 right-6">
-        <div className="w-14 h-14 bg-primary rounded-lg flex items-center justify-center shadow-lg">
-          <span className="text-primary-foreground font-bold text-lg">TCS</span>
+        <div className="w-20 h-14 bg-white rounded-lg flex items-center justify-center shadow-lg p-2">
+          <img src={tcsLogoBlack} alt="TCS Logo" className="w-full h-full object-contain" />
         </div>
       </div>
 
@@ -59,8 +60,8 @@ const SignIn = () => {
           <CardHeader className="text-center pb-2">
             {/* TCS Logo */}
             <div className="flex flex-col items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-primary rounded-xl flex items-center justify-center shadow-md">
-                <span className="text-primary-foreground font-bold text-xl">TCS</span>
+              <div className="w-20 h-16 bg-white rounded-xl flex items-center justify-center shadow-md p-2">
+                <img src={tcsLogoBlack} alt="TCS Logo" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Data Reliability Assistant</h1>
