@@ -1,13 +1,10 @@
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { 
   Menu, 
   X, 
-  Database, 
-  FileCheck,
-  Settings,
-  BarChart3,
-  Users
+  FileText,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import tcsLogoWhite from "@/assets/tcs-logo-white.png";
@@ -18,59 +15,9 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-interface SidebarItemProps {
-  icon: React.ReactNode;
-  label: string;
-  active?: boolean;
-  onClick?: () => void;
-  collapsed?: boolean;
-}
-
-const SidebarItem = ({ icon, label, active, onClick, collapsed }: SidebarItemProps) => {
-  const content = (
-    <button
-      onClick={onClick}
-      className={cn(
-        "w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-all duration-200",
-        active 
-          ? "bg-primary/20 text-primary border-l-3 border-primary" 
-          : "text-muted-foreground hover:bg-muted hover:text-foreground",
-        collapsed && "justify-center px-0"
-      )}
-    >
-      <div className={cn(
-        "flex items-center justify-center",
-        active && "text-primary"
-      )}>
-        {icon}
-      </div>
-      {!collapsed && <span className="flex-1 text-left whitespace-nowrap">{label}</span>}
-    </button>
-  );
-
-  if (collapsed) {
-    return (
-      <TooltipProvider delayDuration={0}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            {content}
-          </TooltipTrigger>
-          <TooltipContent side="right" className="bg-card border-border">
-            <p>{label}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-  }
-
-  return content;
-};
-
 const AppSidebar = () => {
-  const { user } = useAuth();
-  const isAdmin = user?.role === "admin";
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const [activeItem, setActiveItem] = useState("data-reliability");
+  const [isWorkflowExpanded, setIsWorkflowExpanded] = useState(true);
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
@@ -83,16 +30,22 @@ const AppSidebar = () => {
         isCollapsed ? "w-[70px]" : "w-64"
       )}
     >
-      {/* Toggle Button */}
-      <div className="p-3 border-b border-border">
+      {/* Toggle Button - positioned at corner when expanded */}
+      <div className={cn(
+        "p-3 border-b border-border",
+        !isCollapsed && "flex justify-end"
+      )}>
         <button
           onClick={toggleSidebar}
-          className="w-full flex items-center justify-center p-2 rounded-lg hover:bg-muted transition-colors duration-200"
+          className={cn(
+            "flex items-center justify-center rounded-lg hover:bg-muted transition-colors duration-200",
+            isCollapsed ? "w-full p-2" : "p-1.5"
+          )}
         >
           {isCollapsed ? (
             <Menu className="w-5 h-5 text-muted-foreground" />
           ) : (
-            <X className="w-5 h-5 text-muted-foreground" />
+            <X className="w-4 h-4 text-muted-foreground" />
           )}
         </button>
       </div>
@@ -111,7 +64,6 @@ const AppSidebar = () => {
           </div>
           {!isCollapsed && (
             <div className="animate-fade-in">
-              <p className="text-sm font-semibold text-foreground">Data Reliability Assistant</p>
               <p className="text-xs text-muted-foreground leading-tight">An Agentic approach for ensuring reliable marketing data.</p>
             </div>
           )}
@@ -120,15 +72,6 @@ const AppSidebar = () => {
 
       {/* Navigation */}
       <nav className="flex-1 py-4 overflow-y-auto overflow-x-hidden">
-        {/* Admin Section - Only visible to admins */}
-        {isAdmin && !isCollapsed && (
-          <div className="mb-2 animate-fade-in">
-            <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Admin
-            </p>
-          </div>
-        )}
-
         {/* Data Quality Workflow Section */}
         <div className="mb-2">
           {!isCollapsed && (
@@ -137,45 +80,48 @@ const AppSidebar = () => {
             </p>
           )}
           
-          <SidebarItem 
-            icon={<Database className="w-5 h-5" />} 
-            label="Data Quality Workflow"
-            collapsed={isCollapsed}
-            active={activeItem === "data-quality"}
-            onClick={() => setActiveItem("data-quality")}
-          />
-          
-          <SidebarItem 
-            icon={<FileCheck className="w-5 h-5" />} 
-            label="Data Reliability Assistant"
-            active={activeItem === "data-reliability"}
-            collapsed={isCollapsed}
-            onClick={() => setActiveItem("data-reliability")}
-          />
+          {/* Data Quality Workflow - Collapsible Parent */}
+          {isCollapsed ? (
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    className="w-full flex items-center justify-center py-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200"
+                  >
+                    <FileText className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-card border-border">
+                  <p>Data Quality Workflow</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <>
+              <button
+                onClick={() => setIsWorkflowExpanded(!isWorkflowExpanded)}
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200"
+              >
+                <FileText className="w-5 h-5" />
+                <span className="flex-1 text-left whitespace-nowrap">Data Quality Workflow</span>
+                {isWorkflowExpanded ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
 
-          <SidebarItem 
-            icon={<Users className="w-5 h-5" />} 
-            label="User Management"
-            collapsed={isCollapsed}
-            active={activeItem === "users"}
-            onClick={() => setActiveItem("users")}
-          />
-
-          <SidebarItem 
-            icon={<Settings className="w-5 h-5" />} 
-            label="Settings"
-            collapsed={isCollapsed}
-            active={activeItem === "settings"}
-            onClick={() => setActiveItem("settings")}
-          />
-
-          <SidebarItem 
-            icon={<BarChart3 className="w-5 h-5" />} 
-            label="Analytics"
-            collapsed={isCollapsed}
-            active={activeItem === "analytics"}
-            onClick={() => setActiveItem("analytics")}
-          />
+              {/* Child Item - Data Reliability Assistant */}
+              {isWorkflowExpanded && (
+                <button
+                  className="w-full flex items-center gap-3 pl-8 pr-3 py-2.5 text-sm bg-primary/20 text-primary border-l-2 border-primary transition-all duration-200 animate-fade-in"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span className="flex-1 text-left whitespace-nowrap">Data Reliability Assistant</span>
+                </button>
+              )}
+            </>
+          )}
         </div>
       </nav>
     </aside>

@@ -23,7 +23,7 @@ const AppHeader = () => {
   return (
     <header className="h-14 bg-[hsl(220,40%,13%)] border-b border-border flex items-center justify-between px-6 sticky top-0 z-50">
       <div className="flex items-center gap-3">
-        <h1 className="text-lg font-semibold text-primary italic">Data Reliability Assistant</h1>
+        <h1 className="text-lg font-bold text-white tracking-wide">Identity Resolution</h1>
       </div>
 
       <div className="flex items-center gap-4">
