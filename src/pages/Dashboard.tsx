@@ -21,7 +21,13 @@ import {
 import { Upload, Send, Trash2, FileSpreadsheet, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-type QueryMode = "preview" | "kpi_report" | "clean_data" | null;
+type QueryMode = "preview" | "kpi_report" | "clean_data";
+
+interface ChatMessage {
+  query: string;
+  mode: QueryMode;
+  timestamp: Date;
+}
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -30,9 +36,8 @@ const Dashboard = () => {
 
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [promptText, setPromptText] = useState("");
-  const [showResults, setShowResults] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
-  const [queryMode, setQueryMode] = useState<QueryMode>(null);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -51,6 +56,17 @@ const Dashboard = () => {
     }
   }, [user, showWelcome, toast]);
 
+  const determineQueryMode = (query: string): QueryMode => {
+    const lowerQuery = query.toLowerCase().trim();
+    
+    if (lowerQuery.startsWith("please generate data reliability report") || lowerQuery.includes("reliability report")) {
+      return "kpi_report";
+    } else if (lowerQuery.startsWith("please remove records") || lowerQuery.includes("remove null") || lowerQuery.includes("clean data")) {
+      return "clean_data";
+    }
+    return "preview";
+  };
+
   const handleSubmit = () => {
     if (!selectedFile) {
       toast({
@@ -61,31 +77,38 @@ const Dashboard = () => {
       return;
     }
 
-    // Determine query mode based on prompt text
-    const query = promptText.toLowerCase().trim();
-    
-    if (query.startsWith("i've uploaded a file") || query.startsWith("i have uploaded a file") || query === "") {
-      setQueryMode("preview");
-    } else if (query.startsWith("please generate data reliability report") || query.includes("reliability report")) {
-      setQueryMode("kpi_report");
-    } else if (query.startsWith("please remove records") || query.includes("remove null") || query.includes("clean data")) {
-      setQueryMode("clean_data");
-    } else {
-      // Default to preview mode
-      setQueryMode("preview");
+    if (!promptText.trim()) {
+      toast({
+        title: "No query entered",
+        description: "Please enter a query before submitting.",
+        variant: "destructive",
+      });
+      return;
     }
 
-    setShowResults(true);
+    const mode = determineQueryMode(promptText);
+    const newMessage: ChatMessage = {
+      query: promptText,
+      mode,
+      timestamp: new Date(),
+    };
+
+    setChatHistory((prev) => [...prev, newMessage]);
+    setPromptText("");
   };
 
   const handleClear = () => {
     setPromptText("");
-    setShowResults(false);
-    setQueryMode(null);
+    setChatHistory([]);
   };
 
   const handleReRunReport = () => {
-    setQueryMode("kpi_report");
+    const newMessage: ChatMessage = {
+      query: "Re-running reliability report on cleaned data",
+      mode: "kpi_report",
+      timestamp: new Date(),
+    };
+    setChatHistory((prev) => [...prev, newMessage]);
   };
 
   if (!isAuthenticated) {
@@ -96,7 +119,7 @@ const Dashboard = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
       
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         <AppSidebar />
         
         <main className="flex-1 p-6 overflow-auto">
@@ -161,68 +184,66 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Results Section - Only shown after Submit */}
-            {showResults && (
-              <div className="space-y-6 animate-slide-up">
-                {/* Query indicator */}
-                {promptText && (
-                  <Card className="shadow-sm bg-muted/30">
-                    <CardContent className="pt-4 pb-4">
-                      <p className="text-sm text-muted-foreground">
-                        <span className="font-medium text-foreground">User Query:</span> {promptText}
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Preview Mode - Default or "uploaded file" query */}
-                {(queryMode === "preview" || queryMode === null) && (
-                  <>
-                    {/* Preview of Uploaded Data */}
-                    <Card className="shadow-sm">
-                      <CardContent className="pt-6">
-                        <DataTable
-                          title="Preview of Uploaded Data"
-                          data={syntheticTestData}
-                        />
+            {/* Chat History - Append responses below each other */}
+            {chatHistory.length > 0 && (
+              <div className="space-y-6">
+                {chatHistory.map((chat, index) => (
+                  <div key={index} className="space-y-4 animate-slide-up">
+                    {/* User Query */}
+                    <Card className="shadow-sm bg-muted/30">
+                      <CardContent className="pt-4 pb-4">
+                        <p className="text-sm text-muted-foreground">
+                          <span className="font-medium text-foreground">User Query:</span> {chat.query}
+                        </p>
                       </CardContent>
                     </Card>
 
-                    {/* Data Reliability Check */}
-                    <Card className="shadow-sm">
-                      <CardContent className="pt-6">
-                        <DataTable
-                          title="Data Reliability Check"
-                          data={dataReliabilityCheckData}
-                        />
-                      </CardContent>
-                    </Card>
-                  </>
-                )}
+                    {/* Response based on mode */}
+                    {chat.mode === "preview" && (
+                      <>
+                        <Card className="shadow-sm">
+                          <CardContent className="pt-6">
+                            <DataTable
+                              title="Preview of Uploaded Data"
+                              data={syntheticTestData}
+                            />
+                          </CardContent>
+                        </Card>
 
-                {/* KPI Report Mode */}
-                {queryMode === "kpi_report" && (
-                  <Card className="shadow-sm">
-                    <CardContent className="pt-6">
-                      <ReliabilityKPIReport
-                        data={syntheticTestData}
-                        title="Data Reliability KPIs"
-                      />
-                    </CardContent>
-                  </Card>
-                )}
+                        <Card className="shadow-sm">
+                          <CardContent className="pt-6">
+                            <DataTable
+                              title="Data Reliability Check"
+                              data={dataReliabilityCheckData}
+                            />
+                          </CardContent>
+                        </Card>
+                      </>
+                    )}
 
-                {/* Clean Data Mode */}
-                {queryMode === "clean_data" && (
-                  <Card className="shadow-sm">
-                    <CardContent className="pt-6">
-                      <CleanedDataView
-                        originalData={syntheticTestData}
-                        onReRunReport={handleReRunReport}
-                      />
-                    </CardContent>
-                  </Card>
-                )}
+                    {chat.mode === "kpi_report" && (
+                      <Card className="shadow-sm">
+                        <CardContent className="pt-6">
+                          <ReliabilityKPIReport
+                            data={syntheticTestData}
+                            title="Data Reliability KPIs"
+                          />
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {chat.mode === "clean_data" && (
+                      <Card className="shadow-sm">
+                        <CardContent className="pt-6">
+                          <CleanedDataView
+                            originalData={syntheticTestData}
+                            onReRunReport={handleReRunReport}
+                          />
+                        </CardContent>
+                      </Card>
+                    )}
+                  </div>
+                ))}
               </div>
             )}
           </div>

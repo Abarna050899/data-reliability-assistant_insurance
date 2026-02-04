@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { ChevronDown, LogOut, User } from "lucide-react";
+import tcsLogoWhite from "@/assets/tcs-logo-white.png";
 
 const AppHeader = () => {
   const { user, logout } = useAuth();
@@ -21,12 +22,12 @@ const AppHeader = () => {
   const roleLabel = user?.role === "admin" ? "Administrator" : "Data Analyst";
 
   return (
-    <header className="h-14 bg-card border-b border-border flex items-center justify-between px-6 sticky top-0 z-40">
+    <header className="h-14 bg-card border-b border-border flex items-center justify-between px-6 sticky top-0 z-50">
       <div className="flex items-center gap-3">
+        <div className="h-8 bg-primary rounded px-2 py-1 flex items-center justify-center">
+          <img src={tcsLogoWhite} alt="TCS Logo" className="h-5" />
+        </div>
         <h1 className="text-lg font-semibold text-primary">Data Reliability Assistant</h1>
-        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-          
-        </span>
       </div>
 
       <div className="relative" ref={dropdownRef}>
