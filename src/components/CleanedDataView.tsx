@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Home } from "lucide-react";
+import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -92,18 +92,6 @@ const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
             Download Cleaned {downloadFormat}
           </Button>
         </div>
-
-        <Button 
-          variant="secondary" 
-          onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            window.location.reload();
-          }} 
-          className="gap-2"
-        >
-          <Home className="w-4 h-4" />
-          Home
-        </Button>
       </div>
     </div>
   );

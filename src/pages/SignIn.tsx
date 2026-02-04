@@ -9,12 +9,24 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import tcsLogoBlack from "@/assets/tcs-logo-black.png";
 
+// ==========================================
+// DEMO CREDENTIALS (stored in this file)
+// ==========================================
+// Admin User:
+//   Username: admin@tcs.com
+//   Password: admin123
+//
+// Analyst User:
+//   Username: analyst@tcs.com
+//   Password: analyst123
+// ==========================================
+
 const SignIn = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { toast } = useToast();
   
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,12 +37,12 @@ const SignIn = () => {
     setError("");
     setIsLoading(true);
 
-    const result = await login(email, password);
+    const result = await login(username, password);
     
     if (result.success) {
       toast({
         title: "Login successful",
-        description: `Welcome ${email.includes("admin") ? "Admin" : "User"}!`,
+        description: `Welcome ${username.includes("admin") ? "Admin" : "User"}!`,
       });
       navigate("/dashboard");
     } else {
@@ -41,26 +53,26 @@ const SignIn = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background p-4 relative">
-      {/* Top Left Title */}
-      <div className="absolute top-6 left-6">
-        <h1 className="text-xl font-semibold text-primary">Data Reliability Assistant</h1>
+    <div className="min-h-screen flex flex-col bg-background relative">
+      {/* Top Header Bar */}
+      <div className="h-12 bg-[hsl(220,40%,13%)] border-b border-border flex items-center px-6">
+        <h1 className="text-lg font-semibold text-primary">Data Reliability Assistant</h1>
       </div>
 
       {/* Bottom Right TCS Logo */}
-      <div className="absolute bottom-6 right-6">
-        <div className="w-20 h-14 bg-white rounded-lg flex items-center justify-center shadow-lg p-2">
-          <img src={tcsLogoBlack} alt="TCS Logo" className="w-full h-full object-contain" />
+      <div className="absolute bottom-6 right-6 z-10">
+        <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center shadow-lg">
+          <span className="text-primary-foreground font-bold text-lg">TCS</span>
         </div>
       </div>
 
       {/* Centered Card */}
-      <div className="flex-1 flex items-center justify-center">
-        <Card className="w-full max-w-md shadow-lg border-border">
+      <div className="flex-1 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md shadow-lg border-border bg-card">
           <CardHeader className="text-center pb-2">
             {/* TCS Logo */}
             <div className="flex flex-col items-center gap-4 mb-4">
-              <div className="w-20 h-16 bg-white rounded-xl flex items-center justify-center shadow-md p-2">
+              <div className="w-16 h-12 bg-white rounded-lg flex items-center justify-center shadow-md p-2">
                 <img src={tcsLogoBlack} alt="TCS Logo" className="w-full h-full object-contain" />
               </div>
               <div>
@@ -74,15 +86,15 @@ const SignIn = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">Username</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="username"
+                type="text"
+                placeholder="Enter your username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
-                className="h-11"
+                className="h-11 bg-muted/50"
               />
             </div>
 
@@ -96,7 +108,7 @@ const SignIn = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="h-11 pr-10"
+                  className="h-11 pr-10 bg-muted/50"
                 />
                 <button
                   type="button"
@@ -114,26 +126,21 @@ const SignIn = () => {
               </div>
             )}
 
-            <Button type="submit" className="w-full h-11" disabled={isLoading}>
+            <Button type="submit" className="w-full h-11 bg-primary hover:bg-primary/90" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Signing in...
                 </>
               ) : (
-                "Sign In"
+                "Submit"
               )}
             </Button>
-          </form>
 
-          {/* Demo credentials */}
-          <div className="mt-6 p-4 bg-muted/50 rounded-lg">
-            <p className="text-xs font-medium text-muted-foreground mb-2">Demo Credentials:</p>
-            <div className="space-y-1 text-xs">
-              <p><span className="font-medium">Admin:</span> admin@tcs.com / admin123</p>
-              <p><span className="font-medium">Analyst:</span> analyst@tcs.com / analyst123</p>
-            </div>
-          </div>
+            <Button type="button" variant="outline" className="w-full h-11 border-muted-foreground/30">
+              Sign-up
+            </Button>
+          </form>
           </CardContent>
         </Card>
       </div>

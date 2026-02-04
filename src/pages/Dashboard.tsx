@@ -8,6 +8,7 @@ import AppFooter from "@/components/AppFooter";
 import DataTable from "@/components/DataTable";
 import ReliabilityKPIReport from "@/components/ReliabilityKPIReport";
 import CleanedDataView from "@/components/CleanedDataView";
+import ScrollToTopButton from "@/components/ScrollToTopButton";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -135,7 +136,8 @@ const Dashboard = () => {
       <div className="flex flex-1">
         <AppSidebar />
         
-        <main className="flex-1 p-6 overflow-auto ml-64">
+        {/* Main content - adjust margin based on collapsed sidebar (70px) */}
+        <main className="flex-1 p-6 overflow-auto ml-[70px] transition-all duration-300">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* File Upload Section */}
             <Card className="shadow-sm">
@@ -269,6 +271,9 @@ const Dashboard = () => {
           </div>
         </main>
       </div>
+
+      {/* Scroll to Top Button */}
+      <ScrollToTopButton />
 
       <AppFooter />
     </div>
