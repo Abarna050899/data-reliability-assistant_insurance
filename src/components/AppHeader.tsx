@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { ChevronDown, LogOut, User } from "lucide-react";
-import tcsLogoWhite from "@/assets/tcs-logo-white.png";
+import { LogOut, User } from "lucide-react";
 
 const AppHeader = () => {
   const { user, logout } = useAuth();
@@ -18,49 +17,32 @@ const AppHeader = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const displayName = user?.role === "admin" ? "Admin" : user?.name || "User";
+  const displayName = user?.role === "admin" ? "Admin User" : user?.name || "Analyst User";
   const roleLabel = user?.role === "admin" ? "Administrator" : "Data Analyst";
 
   return (
-    <header className="h-14 bg-card border-b border-border flex items-center justify-between px-6 sticky top-0 z-50">
+    <header className="h-14 bg-[hsl(220,40%,13%)] border-b border-border flex items-center justify-between px-6 sticky top-0 z-50">
       <div className="flex items-center gap-3">
-        <div className="h-8 bg-primary rounded px-2 py-1 flex items-center justify-center">
-          <img src={tcsLogoWhite} alt="TCS Logo" className="h-5" />
-        </div>
-        <h1 className="text-lg font-semibold text-primary">Data Reliability Assistant</h1>
+        <h1 className="text-lg font-semibold text-primary italic">Data Reliability Assistant</h1>
       </div>
 
-      <div className="relative" ref={dropdownRef}>
-        <button
-          onClick={() => setShowDropdown(!showDropdown)}
-          onMouseEnter={() => setShowDropdown(true)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-muted transition-colors"
-        >
-          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-            <User className="w-4 h-4 text-primary-foreground" />
-          </div>
-          <span className="text-sm font-medium text-foreground">{displayName}</span>
-          <ChevronDown className="w-4 h-4 text-muted-foreground" />
-        </button>
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <User className="w-4 h-4" />
+          <span>Logged in: <span className="font-semibold text-foreground">{displayName}</span></span>
+        </div>
 
-        {showDropdown && (
-          <div 
-            className="absolute right-0 top-full mt-1 w-56 bg-card rounded-lg shadow-lg border border-border py-2 animate-fade-in"
-            onMouseLeave={() => setShowDropdown(false)}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            onClick={() => {
+              logout();
+            }}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            <div className="px-4 py-3 border-b border-border">
-              <p className="text-sm font-medium text-foreground">{user?.name}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Role: {roleLabel}</p>
-            </div>
-            <button
-              onClick={logout}
-              className="w-full px-4 py-2 text-left text-sm text-destructive hover:bg-muted flex items-center gap-2 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              Sign Out
-            </button>
-          </div>
-        )}
+            <LogOut className="w-4 h-4" />
+            Sign Out
+          </button>
+        </div>
       </div>
     </header>
   );
