@@ -84,15 +84,17 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
                   <TableCell className="text-muted-foreground font-mono text-sm sticky left-0 bg-card z-10">
                     {idx + 1}
                   </TableCell>
-                  {columns.map((col) => (
-                    <TableCell key={col} className="max-w-[200px] whitespace-nowrap">
-                      {row[col] === null || row[col] === undefined ? (
-                        <span className="text-destructive/60 italic text-sm">null</span>
-                      ) : (
-                        String(row[col])
-                      )}
-                    </TableCell>
-                  ))}
+                    {columns.map((col) => (
+                      <TableCell key={col} className="min-w-[150px] max-w-[300px] whitespace-nowrap overflow-hidden text-ellipsis">
+                        {row[col] === null || row[col] === undefined ? (
+                          <span className="text-destructive/60 italic text-sm">null</span>
+                        ) : (
+                          <span className="block truncate" title={String(row[col])}>
+                            {String(row[col])}
+                          </span>
+                        )}
+                      </TableCell>
+                    ))}
                 </TableRow>
               ))}
             </TableBody>

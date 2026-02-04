@@ -56,7 +56,7 @@ const AppSidebar = () => {
   const isAdmin = user?.role === "admin";
 
   return (
-    <aside className="w-64 bg-card border-r border-border flex flex-col h-[calc(100vh-3.5rem-3.5rem)] sticky top-14 overflow-y-auto">
+    <aside className="w-64 bg-card border-r border-border flex flex-col h-[calc(100vh-3.5rem-3.5rem)] fixed top-14 left-0 overflow-y-auto z-40">
       {/* TCS Logo Area */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-3">
