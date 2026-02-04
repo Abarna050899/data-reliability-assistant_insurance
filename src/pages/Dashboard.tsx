@@ -136,8 +136,8 @@ const Dashboard = () => {
       <div className="flex flex-1">
         <AppSidebar />
         
-        {/* Main content - fixed margin for collapsed sidebar (70px), no overlap */}
-        <main className="flex-1 p-6 overflow-auto ml-[70px]">
+        {/* Main content - uses flex layout, sidebar pushes content */}
+        <main className="flex-1 p-6 overflow-auto">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* File Upload Section */}
             <Card className="shadow-sm">

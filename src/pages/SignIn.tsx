@@ -56,7 +56,7 @@ const SignIn = () => {
     <div className="min-h-screen flex flex-col bg-background relative">
       {/* Top Header Bar */}
       <div className="h-12 bg-[hsl(220,40%,13%)] border-b border-border flex items-center px-6">
-        <h1 className="text-lg font-semibold text-primary">Data Reliability Assistant</h1>
+        <h1 className="text-lg font-semibold text-white">Data Reliability Assistant</h1>
       </div>
 
       {/* Bottom Right TCS Logo */}
