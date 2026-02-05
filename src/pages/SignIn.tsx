@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import tcsLogoBlack from "@/assets/tcs-logo-black.png";
+import tcsLogoSignin from "@/assets/tcs-logo-signin.png";
 
 // ==========================================
 // DEMO CREDENTIALS (stored in this file)
@@ -72,8 +72,8 @@ const SignIn = () => {
           <CardHeader className="text-center pb-2">
             {/* TCS Logo */}
             <div className="flex flex-col items-center gap-4 mb-4">
-              <div className="w-16 h-12 bg-white rounded-lg flex items-center justify-center shadow-md p-2">
-                <img src={tcsLogoBlack} alt="TCS Logo" className="w-full h-full object-contain" />
+              <div className="w-20 h-14 bg-[hsl(220,40%,13%)] rounded-lg flex items-center justify-center shadow-md p-2">
+                <img src={tcsLogoSignin} alt="TCS Logo" className="w-full h-full object-contain" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Data Reliability Assistant</h1>
@@ -86,11 +86,11 @@ const SignIn = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Username or Email</Label>
               <Input
                 id="username"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Enter your username or email"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required

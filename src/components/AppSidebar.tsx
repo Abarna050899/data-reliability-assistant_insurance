@@ -26,7 +26,7 @@ const AppSidebar = () => {
   return (
     <aside 
       className={cn(
-        "bg-[hsl(220,40%,13%)] border-r border-border flex flex-col h-[calc(100vh-3.5rem-3.5rem)] transition-all duration-300 ease-in-out flex-shrink-0",
+        "bg-[hsl(220,40%,13%)] border-r border-border flex flex-col h-[calc(100vh-3.5rem-3.5rem)] transition-all duration-300 ease-in-out flex-shrink-0 sticky top-14",
         isCollapsed ? "w-[70px]" : "w-64"
       )}
     >
