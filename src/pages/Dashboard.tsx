@@ -9,6 +9,7 @@ import DataTable from "@/components/DataTable";
 import ReliabilityKPIReport from "@/components/ReliabilityKPIReport";
 import CleanedDataView from "@/components/CleanedDataView";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
+import RuleConfigurator from "@/components/RuleConfigurator";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +24,7 @@ import { Upload, Send, Trash2, FileSpreadsheet, CheckCircle2, Loader2 } from "lu
 import { useToast } from "@/hooks/use-toast";
 
 type QueryMode = "preview" | "kpi_report" | "clean_data";
+type ActiveView = "data-reliability" | "rule-configurator";
 
 interface ChatMessage {
   query: string;
@@ -41,7 +43,7 @@ const Dashboard = () => {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [processingStatus, setProcessingStatus] = useState("");
-
+  const [activeView, setActiveView] = useState<ActiveView>("data-reliability");
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/");
@@ -134,11 +136,15 @@ const Dashboard = () => {
       <AppHeader />
       
       <div className="flex flex-1">
-        <AppSidebar />
+        <AppSidebar activeView={activeView} onViewChange={setActiveView} />
         
         {/* Main content - uses flex layout, sidebar pushes content */}
         <main className="flex-1 p-6 overflow-auto">
           <div className="max-w-7xl mx-auto space-y-6">
+            {activeView === "rule-configurator" ? (
+              <RuleConfigurator />
+            ) : (
+              <>
             {/* File Upload Section */}
             <Card className="shadow-sm">
               <CardHeader className="pb-4">
@@ -267,6 +273,8 @@ const Dashboard = () => {
                   </div>
                 ))}
               </div>
+              )}
+              </>
             )}
           </div>
         </main>
