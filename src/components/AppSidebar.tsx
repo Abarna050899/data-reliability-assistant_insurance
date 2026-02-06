@@ -4,7 +4,8 @@ import {
   X, 
   FileText,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Settings2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import tcsLogoWhite from "@/assets/tcs-logo-white.png";
@@ -15,7 +16,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const AppSidebar = () => {
+interface AppSidebarProps {
+  activeView: "data-reliability" | "rule-configurator";
+  onViewChange: (view: "data-reliability" | "rule-configurator") => void;
+}
+
+const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [isWorkflowExpanded, setIsWorkflowExpanded] = useState(true);
 
@@ -86,13 +92,19 @@ const AppSidebar = () => {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <button
-                    className="w-full flex items-center justify-center py-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200"
+                    onClick={() => onViewChange("data-reliability")}
+                    className={cn(
+                      "w-full flex items-center justify-center py-2.5 hover:bg-muted transition-all duration-200",
+                      activeView === "data-reliability" 
+                        ? "text-primary bg-primary/20" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
                   >
                     <FileText className="w-5 h-5" />
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-card border-border">
-                  <p>Data Quality Workflow</p>
+                  <p>Data Reliability Assistant</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -114,13 +126,58 @@ const AppSidebar = () => {
               {/* Child Item - Data Reliability Assistant */}
               {isWorkflowExpanded && (
                 <button
-                  className="w-full flex items-center gap-3 pl-8 pr-3 py-2.5 text-sm bg-primary/20 text-primary border-l-2 border-primary transition-all duration-200 animate-fade-in"
+                  onClick={() => onViewChange("data-reliability")}
+                  className={cn(
+                    "w-full flex items-center gap-3 pl-8 pr-3 py-2.5 text-sm transition-all duration-200 animate-fade-in",
+                    activeView === "data-reliability"
+                      ? "bg-primary/20 text-primary border-l-2 border-primary"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground border-l-2 border-transparent"
+                  )}
                 >
                   <FileText className="w-4 h-4" />
                   <span className="flex-1 text-left whitespace-nowrap">Data Reliability Assistant</span>
                 </button>
               )}
             </>
+          )}
+
+          {/* Rule Configurator */}
+          {isCollapsed ? (
+            <TooltipProvider delayDuration={0}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => onViewChange("rule-configurator")}
+                    className={cn(
+                      "w-full flex items-center justify-center py-2.5 hover:bg-muted transition-all duration-200",
+                      activeView === "rule-configurator" 
+                        ? "text-primary bg-primary/20" 
+                        : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Settings2 className="w-5 h-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-card border-border">
+                  <p>Rule Configurator</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            isWorkflowExpanded && (
+              <button
+                onClick={() => onViewChange("rule-configurator")}
+                className={cn(
+                  "w-full flex items-center gap-3 pl-8 pr-3 py-2.5 text-sm transition-all duration-200 animate-fade-in",
+                  activeView === "rule-configurator"
+                    ? "bg-primary/20 text-primary border-l-2 border-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground border-l-2 border-transparent"
+                )}
+              >
+                <Settings2 className="w-4 h-4" />
+                <span className="flex-1 text-left whitespace-nowrap">Rule Configurator</span>
+              </button>
+            )
           )}
         </div>
       </nav>
