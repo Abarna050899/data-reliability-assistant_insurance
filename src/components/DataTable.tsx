@@ -61,17 +61,17 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
   };
 
   const TableContent = ({ zoomed = false }: { zoomed?: boolean }) => (
-    <div className={cn("border border-border rounded-lg overflow-hidden", zoomed && "h-full")}>
+    <div className={cn("border border-gray-200 rounded-lg overflow-hidden bg-white", zoomed && "h-full")}>
       <div className={cn("w-full overflow-x-auto overflow-y-auto", zoomed ? "h-[70vh]" : "h-[350px]")}>
         <div className="min-w-max">
           <Table>
             <TableHeader>
-              <TableRow className="bg-primary/5">
-                <TableHead className="w-12 font-semibold text-foreground sticky left-0 bg-primary/5 z-10">#</TableHead>
+              <TableRow className="bg-gray-100">
+                <TableHead className="w-12 font-semibold text-gray-800 sticky left-0 bg-gray-100 z-10">#</TableHead>
                 {columns.map((col) => (
                   <TableHead 
                     key={col} 
-                    className="font-semibold text-foreground min-w-[120px] whitespace-nowrap"
+                    className="font-semibold text-gray-800 min-w-[120px] whitespace-nowrap"
                   >
                     {col.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                   </TableHead>
@@ -80,12 +80,12 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
             </TableHeader>
             <TableBody>
               {filteredData.map((row, idx) => (
-                <TableRow key={idx} className="hover:bg-muted/30 transition-colors">
-                  <TableCell className="text-muted-foreground font-mono text-sm sticky left-0 bg-card z-10">
+                <TableRow key={idx} className="hover:bg-gray-50 transition-colors">
+                  <TableCell className="text-gray-500 font-mono text-sm sticky left-0 bg-white z-10">
                     {idx + 1}
                   </TableCell>
                     {columns.map((col) => (
-                      <TableCell key={col} className="min-w-[150px] max-w-[300px] whitespace-nowrap overflow-hidden text-ellipsis">
+                      <TableCell key={col} className="min-w-[150px] max-w-[300px] whitespace-nowrap overflow-hidden text-ellipsis text-gray-800">
                         {row[col] === null || row[col] === undefined ? (
                           <span className="text-destructive/60 italic text-sm">null</span>
                         ) : (

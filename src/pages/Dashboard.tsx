@@ -14,6 +14,7 @@ import RuleConfigurator from "@/components/RuleConfigurator";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +30,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Send, Trash2, CheckCircle2, Loader2, Eye, CloudUpload } from "lucide-react";
+import { Upload, Send, Trash2, CheckCircle2, Loader2, Eye, CloudUpload, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -47,7 +48,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
-  const { savedRules } = useSavedRules();
+  const { savedRules, setSavedRules } = useSavedRules();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [promptText, setPromptText] = useState("");
@@ -58,7 +59,17 @@ const Dashboard = () => {
   const [activeView, setActiveView] = useState<ActiveView>("data-reliability");
   const [isDragOver, setIsDragOver] = useState(false);
   const [showSavedRulesDialog, setShowSavedRulesDialog] = useState(false);
+  const [showEditRulesDialog, setShowEditRulesDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Column selection for Rule Name column
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [editColumnsTemp, setEditColumnsTemp] = useState<string[]>([]);
+
+  // View Saved Rules dialog state
+  const [selectedExecutorRuleId, setSelectedExecutorRuleId] = useState<string | null>(null);
+  const [showColumnSelectInDialog, setShowColumnSelectInDialog] = useState(false);
+  const [tempDialogColumns, setTempDialogColumns] = useState<string[]>([]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -176,10 +187,75 @@ const Dashboard = () => {
     }
   }, [toast]);
 
+  // Computed data
+  const allColumnNames = dataReliabilityCheckData.map(r => r.column_name);
+
+  const enhancedReliabilityData = dataReliabilityCheckData.map(row => ({
+    column_name: row.column_name,
+    data_type: row.data_type,
+    null_check_eligibility: row.null_check_eligibility,
+    format_check: row.format_check,
+    rule_name: selectedColumns.includes(row.column_name) ? "Yes" : "No",
+  }));
+
   // Get executor rules for the popup
   const executorRules = savedRules.filter((rule) =>
     rule.permissions.some((p) => p.role === "Executor")
   );
+
+  // Edit Rules handlers
+  const handleOpenEditRules = () => {
+    setEditColumnsTemp([...selectedColumns]);
+    setShowEditRulesDialog(true);
+  };
+
+  const handleEditRulesApply = () => {
+    setSelectedColumns([...editColumnsTemp]);
+    setShowEditRulesDialog(false);
+    toast({ title: "Rules applied", description: "Column selections have been updated." });
+  };
+
+  // Delete rule handler
+  const handleDeleteRule = () => {
+    if (!selectedExecutorRuleId) {
+      toast({ title: "No rule selected", description: "Please open View Saved Rules and select a rule first.", variant: "destructive" });
+      return;
+    }
+    const ruleName = savedRules.find(r => r.id === selectedExecutorRuleId)?.ruleName;
+    setSavedRules(prev => prev.filter(r => r.id !== selectedExecutorRuleId));
+    setSelectedExecutorRuleId(null);
+    toast({ title: "Rule deleted", description: `Rule "${ruleName}" has been deleted.` });
+  };
+
+  // View Saved Rules dialog column select handlers
+  const handleOpenColumnSelect = () => {
+    setTempDialogColumns([...selectedColumns]);
+    setShowColumnSelectInDialog(true);
+  };
+
+  const handleDialogColumnApply = () => {
+    setSelectedColumns([...tempDialogColumns]);
+    setShowColumnSelectInDialog(false);
+    setShowSavedRulesDialog(false);
+    toast({ title: "Columns applied", description: "Column selections have been updated." });
+  };
+
+  const handleDialogCancel = () => {
+    setShowColumnSelectInDialog(false);
+    setShowSavedRulesDialog(false);
+  };
+
+  const toggleEditColumn = (col: string) => {
+    setEditColumnsTemp(prev =>
+      prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]
+    );
+  };
+
+  const toggleDialogColumn = (col: string) => {
+    setTempDialogColumns(prev =>
+      prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]
+    );
+  };
 
   if (!isAuthenticated) {
     return null;
@@ -342,20 +418,39 @@ const Dashboard = () => {
                               <CardContent className="pt-6">
                                 <DataTable
                                   title="Data Reliability Check"
-                                  data={dataReliabilityCheckData}
+                                  data={enhancedReliabilityData}
                                 />
                               </CardContent>
                             </Card>
 
-                            {/* View Saved Rules Button */}
-                            <div className="flex justify-start">
+                            {/* Action Buttons: View Saved Rules, Edit Rules, Delete */}
+                            <div className="flex items-center gap-3">
                               <Button
                                 variant="outline"
                                 className="gap-2 border-gray-300 text-black hover:bg-gray-100"
-                                onClick={() => setShowSavedRulesDialog(true)}
+                                onClick={() => {
+                                  setShowColumnSelectInDialog(false);
+                                  setShowSavedRulesDialog(true);
+                                }}
                               >
                                 <Eye className="w-4 h-4" />
                                 View Saved Rules
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="gap-2 border-gray-300 text-black hover:bg-gray-100"
+                                onClick={handleOpenEditRules}
+                              >
+                                <Pencil className="w-4 h-4" />
+                                Edit Rules
+                              </Button>
+                              <Button
+                                variant="outline"
+                                className="gap-2 border-red-300 text-red-600 hover:bg-red-50"
+                                onClick={handleDeleteRule}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                                Delete
                               </Button>
                             </div>
                           </>
@@ -393,56 +488,150 @@ const Dashboard = () => {
 
       {/* View Saved Rules Dialog */}
       <Dialog open={showSavedRulesDialog} onOpenChange={setShowSavedRulesDialog}>
-        <DialogContent className="max-w-2xl bg-white text-black border border-gray-200">
+        <DialogContent className="max-w-3xl bg-white text-black border border-gray-200">
           <DialogHeader>
             <DialogTitle className="text-black">Saved Rules (Executor Access)</DialogTitle>
           </DialogHeader>
+
+          {/* Executor Rules Table */}
           <div className="border border-gray-200 rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-100">
-                  <TableHead className="text-black">Rule Name</TableHead>
-                  <TableHead className="text-black">DQ Dimension</TableHead>
-                  <TableHead className="text-black">Status</TableHead>
-                  <TableHead className="text-black">Created On</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {executorRules.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center text-gray-500 py-8">
-                      No rules with Executor permissions found.
-                    </TableCell>
+            <div className="max-h-[300px] overflow-y-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-100">
+                    <TableHead className="w-12 text-black"></TableHead>
+                    <TableHead className="text-black">Rule Name</TableHead>
+                    <TableHead className="text-black">DQ Dimension</TableHead>
+                    <TableHead className="text-black">Status</TableHead>
+                    <TableHead className="text-black">Created On</TableHead>
                   </TableRow>
-                ) : (
-                  executorRules.map((rule) => (
-                    <TableRow key={rule.id} className="hover:bg-gray-50">
-                      <TableCell className="font-medium text-black">{rule.ruleName}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="text-xs">
-                          {rule.dqDimension}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          className={cn(
-                            "text-xs",
-                            rule.status === "Active"
-                              ? "bg-green-100 text-green-700 border-green-300"
-                              : "bg-gray-100 text-gray-600"
-                          )}
-                        >
-                          {rule.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-gray-600">
-                        {format(rule.createdOn, "MMM dd, yyyy")}
+                </TableHeader>
+                <TableBody>
+                  {executorRules.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center text-gray-500 py-8">
+                        No rules with Executor permissions found.
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+                  ) : (
+                    executorRules.map((rule) => (
+                      <TableRow
+                        key={rule.id}
+                        className={cn(
+                          "hover:bg-gray-50 cursor-pointer",
+                          selectedExecutorRuleId === rule.id && "bg-blue-50"
+                        )}
+                        onClick={() => setSelectedExecutorRuleId(rule.id)}
+                      >
+                        <TableCell>
+                          <input
+                            type="radio"
+                            name="executor-rule"
+                            checked={selectedExecutorRuleId === rule.id}
+                            onChange={() => setSelectedExecutorRuleId(rule.id)}
+                            className="w-4 h-4"
+                          />
+                        </TableCell>
+                        <TableCell className="font-medium text-black">{rule.ruleName}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="text-xs">
+                            {rule.dqDimension}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={cn(
+                              "text-xs",
+                              rule.status === "Active"
+                                ? "bg-green-100 text-green-700 border-green-300"
+                                : "bg-gray-100 text-gray-600"
+                            )}
+                          >
+                            {rule.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-gray-600">
+                          {format(rule.createdOn, "MMM dd, yyyy")}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+
+          {/* Column Selection Area (toggled by Select Column) */}
+          {showColumnSelectInDialog && (
+            <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+              <h4 className="text-sm font-semibold text-black mb-3">Select Columns</h4>
+              <div className="grid grid-cols-3 gap-2">
+                {allColumnNames.map((col) => (
+                  <label key={col} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                    <Checkbox
+                      checked={tempDialogColumns.includes(col)}
+                      onCheckedChange={() => toggleDialogColumn(col)}
+                    />
+                    <span>{col}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Dialog Action Buttons */}
+          <div className="flex items-center gap-3 pt-2">
+            <Button
+              variant="outline"
+              className="border-gray-300 text-black hover:bg-gray-100"
+              onClick={handleOpenColumnSelect}
+            >
+              Select Column
+            </Button>
+            <Button
+              onClick={showColumnSelectInDialog ? handleDialogColumnApply : handleDialogCancel}
+            >
+              Apply
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleDialogCancel}
+            >
+              Cancel
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Rules Dialog */}
+      <Dialog open={showEditRulesDialog} onOpenChange={setShowEditRulesDialog}>
+        <DialogContent className="max-w-2xl bg-white text-black border border-gray-200">
+          <DialogHeader>
+            <DialogTitle className="text-black">Edit Rules - Select Columns</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-gray-500">
+            Select columns to apply rules. The "Rule Name" column in the Data Reliability Check table will show "Yes" for selected columns and "No" for unselected ones.
+          </p>
+          <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+            <div className="grid grid-cols-3 gap-3">
+              {allColumnNames.map((col) => (
+                <label key={col} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:text-black">
+                  <Checkbox
+                    checked={editColumnsTemp.includes(col)}
+                    onCheckedChange={() => toggleEditColumn(col)}
+                  />
+                  <span>{col}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center gap-3 pt-2">
+            <Button onClick={handleEditRulesApply}>
+              Apply
+            </Button>
+            <Button variant="secondary" onClick={() => setShowEditRulesDialog(false)}>
+              Cancel
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

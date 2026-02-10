@@ -16,6 +16,7 @@ export interface SavedRule {
   createdBy: string;
   createdOn: Date;
   lastModified: Date;
+  modifiedBy: string;
   status: "Active" | "Draft";
   permissions: Permission[];
   isPublic: boolean;
@@ -38,6 +39,7 @@ const DEFAULT_RULES: SavedRule[] = [
     createdBy: "System",
     createdOn: new Date("2025-01-15"),
     lastModified: new Date("2025-01-15"),
+    modifiedBy: "System",
     status: "Active",
     permissions: [
       { name: "Analyst User", role: "Viewer" },
