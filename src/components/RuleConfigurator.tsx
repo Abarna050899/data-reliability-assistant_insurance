@@ -47,6 +47,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useSavedRules, type DQDimension, type Permission } from "@/contexts/SavedRulesContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const DQ_DIMENSIONS: DQDimension[] = [
   "Accuracy",
@@ -78,6 +79,7 @@ const DIMENSION_COLORS: Record<DQDimension, string> = {
 const RuleConfigurator = () => {
   const { toast } = useToast();
   const { savedRules, setSavedRules } = useSavedRules();
+  const { user } = useAuth();
   
   // Form state
   const [ruleName, setRuleName] = useState("");
@@ -156,6 +158,7 @@ const RuleConfigurator = () => {
                 comments,
                 ruleFormula,
                 lastModified: new Date(),
+                modifiedBy: user?.name || "Unknown",
                 permissions: [...permissions],
                 isPublic,
               }
@@ -174,9 +177,10 @@ const RuleConfigurator = () => {
         dqDimension: dqDimension as DQDimension,
         comments,
         ruleFormula,
-        createdBy: "Current User",
+        createdBy: user?.name || "Unknown",
         createdOn: new Date(),
         lastModified: new Date(),
+        modifiedBy: user?.name || "Unknown",
         status: "Active" as const,
         permissions: [...permissions],
         isPublic,
@@ -543,7 +547,7 @@ const RuleConfigurator = () => {
             </CardHeader>
             <CardContent>
               <div className="border border-border rounded-lg overflow-hidden">
-                <div className="max-h-[480px] overflow-y-auto">
+                <div className="max-h-[480px] overflow-y-auto overflow-x-auto">
                   <Table>
                     <TableHeader className="sticky top-0 z-10 bg-secondary/80 backdrop-blur-sm">
                       <TableRow className="bg-secondary/30">
@@ -621,7 +625,7 @@ const RuleConfigurator = () => {
                             </TableCell>
                             <TableCell>
                               <div className="flex flex-col">
-                                <span className="text-sm">Modified</span>
+                                <span className="text-sm">{rule.modifiedBy || rule.createdBy}</span>
                                 <span className="text-xs text-muted-foreground">
                                   {format(rule.lastModified, "MMM dd, yyyy")}
                                 </span>
