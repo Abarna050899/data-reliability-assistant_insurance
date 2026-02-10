@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,43 +46,25 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useSavedRules, type DQDimension, type Permission } from "@/contexts/SavedRulesContext";
 
-const DQ_DIMENSIONS = [
+const DQ_DIMENSIONS: DQDimension[] = [
   "Accuracy",
   "Completeness",
   "Uniqueness",
   "Consistency",
   "Timeliness",
   "Validity",
-] as const;
-
-type DQDimension = typeof DQ_DIMENSIONS[number];
+];
 
 const DIMENSION_DEFINITIONS: Record<DQDimension, string> = {
   Accuracy: "Correctness of data.",
   Completeness: "No missing data.",
   Consistency: "No contradictions.",
-  Timeliness: "Up-to-date data.",
+  Timeliness: "Data is up-to-date.",
   Validity: "Correct format and rules.",
   Uniqueness: "No duplicates.",
 };
-
-interface Permission {
-  name: string;
-  role: "Viewer" | "Editor" | "Executor";
-}
-
-interface SavedRule {
-  id: string;
-  ruleName: string;
-  dqDimension: DQDimension;
-  comments: string;
-  ruleFormula: string;
-  createdBy: string;
-  createdOn: Date;
-  lastModified: Date;
-  status: "Active" | "Draft";
-}
 
 const DIMENSION_COLORS: Record<DQDimension, string> = {
   Accuracy: "bg-blue-500/20 text-blue-400 border-blue-500/30",
@@ -95,6 +77,7 @@ const DIMENSION_COLORS: Record<DQDimension, string> = {
 
 const RuleConfigurator = () => {
   const { toast } = useToast();
+  const { savedRules, setSavedRules } = useSavedRules();
   
   // Form state
   const [ruleName, setRuleName] = useState("");
@@ -118,12 +101,6 @@ const RuleConfigurator = () => {
     to: undefined,
   });
   const [selectedRules, setSelectedRules] = useState<string[]>([]);
-
-  // DQ Dimension hover tooltip
-  const [hoveredDimension, setHoveredDimension] = useState<DQDimension | null>(null);
-
-  // Saved rules — start empty, populated by Save
-  const [savedRules, setSavedRules] = useState<SavedRule[]>([]);
 
   const handleAddPermission = () => {
     if (!newPermissionName.trim()) return;
@@ -169,7 +146,6 @@ const RuleConfigurator = () => {
     }
 
     if (editingRuleId) {
-      // Update existing rule
       setSavedRules((prev) =>
         prev.map((r) =>
           r.id === editingRuleId
@@ -180,6 +156,8 @@ const RuleConfigurator = () => {
                 comments,
                 ruleFormula,
                 lastModified: new Date(),
+                permissions: [...permissions],
+                isPublic,
               }
             : r
         )
@@ -190,8 +168,7 @@ const RuleConfigurator = () => {
       });
       setEditingRuleId(null);
     } else {
-      // Create new rule
-      const newRule: SavedRule = {
+      const newRule = {
         id: crypto.randomUUID(),
         ruleName: ruleName.trim(),
         dqDimension: dqDimension as DQDimension,
@@ -200,7 +177,9 @@ const RuleConfigurator = () => {
         createdBy: "Current User",
         createdOn: new Date(),
         lastModified: new Date(),
-        status: "Active",
+        status: "Active" as const,
+        permissions: [...permissions],
+        isPublic,
       };
       setSavedRules((prev) => [newRule, ...prev]);
       toast({
@@ -301,6 +280,8 @@ const RuleConfigurator = () => {
       setDqDimension(rule.dqDimension);
       setComments(rule.comments || "");
       setRuleFormula(rule.ruleFormula || "");
+      setPermissions([...rule.permissions]);
+      setIsPublic(rule.isPublic);
       setEditingRuleId(rule.id);
       toast({ title: "Rule loaded", description: `"${rule.ruleName}" loaded for editing.` });
     }
@@ -365,7 +346,7 @@ const RuleConfigurator = () => {
               </Tooltip>
             </div>
 
-            {/* DQ Dimension with hover definitions */}
+            {/* DQ Dimension with hover definitions via Radix Tooltip */}
             <div>
               <Label>DQ Dimension</Label>
               <Select value={dqDimension} onValueChange={setDqDimension}>
@@ -374,21 +355,18 @@ const RuleConfigurator = () => {
                 </SelectTrigger>
                 <SelectContent>
                   {DQ_DIMENSIONS.map((dim) => (
-                    <div
-                      key={dim}
-                      className="relative"
-                      onMouseEnter={() => setHoveredDimension(dim)}
-                      onMouseLeave={() => setHoveredDimension(null)}
-                    >
-                      <SelectItem value={dim}>
-                        {dim}
-                      </SelectItem>
-                      {hoveredDimension === dim && (
-                        <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 bg-popover border border-border text-popover-foreground text-xs rounded-md px-3 py-1.5 shadow-md whitespace-nowrap pointer-events-none">
-                          {DIMENSION_DEFINITIONS[dim]}
+                    <Tooltip key={dim}>
+                      <TooltipTrigger asChild>
+                        <div>
+                          <SelectItem value={dim}>
+                            {dim}
+                          </SelectItem>
                         </div>
-                      )}
-                    </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="z-[200]">
+                        <p className="text-xs font-medium">{dim}: {DIMENSION_DEFINITIONS[dim]}</p>
+                      </TooltipContent>
+                    </Tooltip>
                   ))}
                 </SelectContent>
               </Select>
