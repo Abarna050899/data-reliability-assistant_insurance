@@ -66,8 +66,8 @@ const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="p-4 bg-success/10 border border-success/30 rounded-lg">
-        <p className="text-sm text-foreground">
+      <div className="p-4 bg-green-50 border border-green-300 rounded-lg">
+        <p className="text-sm text-gray-800 font-medium">
           Removed rows with null values. Cleaned data preview ({cleanedData.length} of {originalData.length} rows)
         </p>
       </div>

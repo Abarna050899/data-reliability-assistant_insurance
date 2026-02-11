@@ -66,12 +66,12 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
         <div className="min-w-max">
           <Table>
             <TableHeader>
-              <TableRow className="bg-gray-100">
-                <TableHead className="w-12 font-semibold text-gray-800 sticky left-0 bg-gray-100 z-10">#</TableHead>
+              <TableRow className="bg-gray-200">
+                <TableHead className="w-12 font-semibold text-gray-900 sticky left-0 bg-gray-200 z-10">#</TableHead>
                 {columns.map((col) => (
                   <TableHead 
                     key={col} 
-                    className="font-semibold text-gray-800 min-w-[120px] whitespace-nowrap"
+                    className="font-semibold text-gray-900 min-w-[120px] whitespace-nowrap bg-gray-200"
                   >
                     {col.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                   </TableHead>
@@ -81,13 +81,13 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
             <TableBody>
               {filteredData.map((row, idx) => (
                 <TableRow key={idx} className="hover:bg-gray-50 transition-colors">
-                  <TableCell className="text-gray-500 font-mono text-sm sticky left-0 bg-white z-10">
+                  <TableCell className="text-gray-600 font-mono text-sm sticky left-0 bg-white z-10">
                     {idx + 1}
                   </TableCell>
                     {columns.map((col) => (
                       <TableCell key={col} className="min-w-[150px] max-w-[300px] whitespace-nowrap overflow-hidden text-ellipsis text-gray-800">
                         {row[col] === null || row[col] === undefined ? (
-                          <span className="text-destructive/60 italic text-sm">null</span>
+                          <span className="text-red-500 italic text-sm">null</span>
                         ) : (
                           <span className="block truncate" title={String(row[col])}>
                             {String(row[col])}
@@ -108,7 +108,7 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
     <div className={cn("space-y-3 animate-fade-in", className)}>
       {/* Header with title and controls */}
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-foreground text-lg">{title}</h3>
+        <h3 className="font-semibold text-gray-900 text-lg">{title}</h3>
         
         <div className="flex items-center gap-2">
           {showSearch && (
