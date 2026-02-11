@@ -424,10 +424,9 @@ const Dashboard = () => {
                             </Card>
 
                             {/* Action Buttons: View Saved Rules, Edit Rules, Delete */}
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-3 mt-4">
                               <Button
-                                variant="outline"
-                                className="gap-2 border-gray-300 text-black hover:bg-gray-100"
+                                className="gap-2 bg-blue-600 text-white hover:bg-blue-700"
                                 onClick={() => {
                                   setShowColumnSelectInDialog(false);
                                   setShowSavedRulesDialog(true);
@@ -437,16 +436,14 @@ const Dashboard = () => {
                                 View Saved Rules
                               </Button>
                               <Button
-                                variant="outline"
-                                className="gap-2 border-gray-300 text-black hover:bg-gray-100"
+                                className="gap-2 bg-gray-700 text-white hover:bg-gray-800"
                                 onClick={handleOpenEditRules}
                               >
                                 <Pencil className="w-4 h-4" />
                                 Edit Rules
                               </Button>
                               <Button
-                                variant="outline"
-                                className="gap-2 border-red-300 text-red-600 hover:bg-red-50"
+                                className="gap-2 bg-red-600 text-white hover:bg-red-700"
                                 onClick={handleDeleteRule}
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -534,7 +531,7 @@ const Dashboard = () => {
                         </TableCell>
                         <TableCell className="font-medium text-black">{rule.ruleName}</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs border-gray-400 text-gray-800">
                             {rule.dqDimension}
                           </Badge>
                         </TableCell>
@@ -582,8 +579,7 @@ const Dashboard = () => {
           {/* Dialog Action Buttons */}
           <div className="flex items-center gap-3 pt-2">
             <Button
-              variant="outline"
-              className="border-gray-300 text-black hover:bg-gray-100"
+              className="bg-blue-600 text-white hover:bg-blue-700"
               onClick={handleOpenColumnSelect}
             >
               Select Column
