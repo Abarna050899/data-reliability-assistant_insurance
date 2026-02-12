@@ -241,8 +241,9 @@ const Dashboard = () => {
     rule_name: selectedColumns.includes(row.column_name) ? "Yes" : "No",
   }));
 
-  // Get executor rules for the popup
+  // Get executor rules for the popup — must be Active AND have Executor permission
   const executorRules = savedRules.filter((rule) =>
+    rule.status === "Active" &&
     rule.permissions.some((p) => p.role === "Executor")
   );
 
