@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSavedRules } from "@/contexts/SavedRulesContext";
+import { useUploadedColumns } from "@/contexts/UploadedColumnsContext";
 import { syntheticTestData, dataReliabilityCheckData } from "@/data/syntheticData";
 import AppHeader from "@/components/AppHeader";
 import AppSidebar from "@/components/AppSidebar";
@@ -30,10 +31,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Send, Trash2, CheckCircle2, Loader2, Eye, CloudUpload, Pencil } from "lucide-react";
+import { Upload, Send, Trash2, CheckCircle2, Loader2, Eye, CloudUpload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import type { ColumnInfo } from "@/contexts/UploadedColumnsContext";
 
 type QueryMode = "preview" | "kpi_report" | "clean_data";
 type ActiveView = "data-reliability" | "rule-configurator";
@@ -44,11 +46,41 @@ interface ChatMessage {
   timestamp: Date;
 }
 
+function inferDataType(value: unknown): string {
+  if (value === null || value === undefined) return "unknown";
+  if (typeof value === "number") return "number";
+  if (typeof value === "boolean") return "boolean";
+  if (typeof value === "string") {
+    if (/^\d{4}-\d{2}-\d{2}/.test(value)) return "date";
+    if (/^https?:\/\//.test(value)) return "url";
+    return "string";
+  }
+  return "string";
+}
+
+function parseCSVHeader(text: string): ColumnInfo[] {
+  const lines = text.split("\n").filter((l) => l.trim());
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(",").map((h) => h.trim().replace(/^"|"$/g, ""));
+  const firstRow = lines[1].split(",").map((v) => v.trim().replace(/^"|"$/g, ""));
+  return headers.map((name, i) => {
+    const raw = firstRow[i] ?? "";
+    let dataType = "string";
+    if (raw === "" || raw.toLowerCase() === "null") dataType = "unknown";
+    else if (!isNaN(Number(raw))) dataType = "number";
+    else if (raw === "true" || raw === "false") dataType = "boolean";
+    else if (/^\d{4}-\d{2}-\d{2}/.test(raw)) dataType = "date";
+    else if (/^https?:\/\//.test(raw)) dataType = "url";
+    return { name, dataType };
+  });
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const { savedRules, setSavedRules } = useSavedRules();
+  const { setUploadedColumns } = useUploadedColumns();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [promptText, setPromptText] = useState("");
@@ -59,12 +91,10 @@ const Dashboard = () => {
   const [activeView, setActiveView] = useState<ActiveView>("data-reliability");
   const [isDragOver, setIsDragOver] = useState(false);
   const [showSavedRulesDialog, setShowSavedRulesDialog] = useState(false);
-  const [showEditRulesDialog, setShowEditRulesDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Column selection for Rule Name column
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
-  const [editColumnsTemp, setEditColumnsTemp] = useState<string[]>([]);
 
   // View Saved Rules dialog state
   const [selectedExecutorRuleId, setSelectedExecutorRuleId] = useState<string | null>(null);
@@ -102,20 +132,11 @@ const Dashboard = () => {
 
   const handleSubmit = async () => {
     if (!selectedFile) {
-      toast({
-        title: "No file selected",
-        description: "Please upload a file before submitting.",
-        variant: "destructive",
-      });
+      toast({ title: "No file selected", description: "Please upload a file before submitting.", variant: "destructive" });
       return;
     }
-
     if (!promptText.trim()) {
-      toast({
-        title: "No query entered",
-        description: "Please enter a query before submitting.",
-        variant: "destructive",
-      });
+      toast({ title: "No query entered", description: "Please enter a query before submitting.", variant: "destructive" });
       return;
     }
 
@@ -134,12 +155,7 @@ const Dashboard = () => {
     setProcessingStatus("");
 
     const mode = determineQueryMode(queryText);
-    const newMessage: ChatMessage = {
-      query: queryText,
-      mode,
-      timestamp: new Date(),
-    };
-
+    const newMessage: ChatMessage = { query: queryText, mode, timestamp: new Date() };
     setChatHistory((prev) => [...prev, newMessage]);
   };
 
@@ -147,6 +163,31 @@ const Dashboard = () => {
     setPromptText("");
     setChatHistory([]);
   };
+
+  // Extract columns from file and share with context
+  const extractAndShareColumns = useCallback((file: File) => {
+    const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
+    if (ext === ".csv") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        const cols = parseCSVHeader(text);
+        setUploadedColumns(cols);
+      };
+      // Read only first 4KB for header + first row
+      reader.readAsText(file.slice(0, 4096));
+    } else {
+      // For non-CSV, extract from synthetic data as fallback
+      const sample = syntheticTestData[0];
+      if (sample) {
+        const cols: ColumnInfo[] = Object.entries(sample).map(([key, val]) => ({
+          name: key,
+          dataType: inferDataType(val),
+        }));
+        setUploadedColumns(cols);
+      }
+    }
+  }, [setUploadedColumns]);
 
   // Drag & Drop handlers
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -172,20 +213,22 @@ const Dashboard = () => {
       const ext = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
       if (validTypes.includes(ext)) {
         setSelectedFile(file);
+        extractAndShareColumns(file);
         toast({ title: "File uploaded", description: `${file.name} selected successfully.` });
       } else {
         toast({ title: "Invalid file type", description: "Please upload CSV, XLSX, or JSON files.", variant: "destructive" });
       }
     }
-  }, [toast]);
+  }, [toast, extractAndShareColumns]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       setSelectedFile(files[0]);
+      extractAndShareColumns(files[0]);
       toast({ title: "File uploaded", description: `${files[0].name} selected successfully.` });
     }
-  }, [toast]);
+  }, [toast, extractAndShareColumns]);
 
   // Computed data
   const allColumnNames = dataReliabilityCheckData.map(r => r.column_name);
@@ -202,18 +245,6 @@ const Dashboard = () => {
   const executorRules = savedRules.filter((rule) =>
     rule.permissions.some((p) => p.role === "Executor")
   );
-
-  // Edit Rules handlers
-  const handleOpenEditRules = () => {
-    setEditColumnsTemp([...selectedColumns]);
-    setShowEditRulesDialog(true);
-  };
-
-  const handleEditRulesApply = () => {
-    setSelectedColumns([...editColumnsTemp]);
-    setShowEditRulesDialog(false);
-    toast({ title: "Rules applied", description: "Column selections have been updated." });
-  };
 
   // Delete rule handler
   const handleDeleteRule = () => {
@@ -243,12 +274,6 @@ const Dashboard = () => {
   const handleDialogCancel = () => {
     setShowColumnSelectInDialog(false);
     setShowSavedRulesDialog(false);
-  };
-
-  const toggleEditColumn = (col: string) => {
-    setEditColumnsTemp(prev =>
-      prev.includes(col) ? prev.filter(c => c !== col) : [...prev, col]
-    );
   };
 
   const toggleDialogColumn = (col: string) => {
@@ -344,6 +369,7 @@ const Dashboard = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedFile(null);
+                            setUploadedColumns([]);
                           }}
                           className="ml-auto text-gray-400 hover:text-red-500"
                         >
@@ -423,7 +449,7 @@ const Dashboard = () => {
                               </CardContent>
                             </Card>
 
-                            {/* Action Buttons: View Saved Rules, Edit Rules, Delete */}
+                            {/* Action Buttons: View Saved Rules, Delete */}
                             <div className="flex items-center gap-3 mt-4">
                               <Button
                                 className="gap-2 bg-blue-600 text-white hover:bg-blue-700"
@@ -434,13 +460,6 @@ const Dashboard = () => {
                               >
                                 <Eye className="w-4 h-4" />
                                 View Saved Rules
-                              </Button>
-                              <Button
-                                className="gap-2 bg-gray-700 text-white hover:bg-gray-800"
-                                onClick={handleOpenEditRules}
-                              >
-                                <Pencil className="w-4 h-4" />
-                                Edit Rules
                               </Button>
                               <Button
                                 className="gap-2 bg-red-600 text-white hover:bg-red-700"
@@ -593,39 +612,6 @@ const Dashboard = () => {
               variant="secondary"
               onClick={handleDialogCancel}
             >
-              Cancel
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Rules Dialog */}
-      <Dialog open={showEditRulesDialog} onOpenChange={setShowEditRulesDialog}>
-        <DialogContent className="max-w-2xl bg-white text-black border border-gray-200">
-          <DialogHeader>
-            <DialogTitle className="text-black">Edit Rules - Select Columns</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-gray-500">
-            Select columns to apply rules. The "Rule Name" column in the Data Reliability Check table will show "Yes" for selected columns and "No" for unselected ones.
-          </p>
-          <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-            <div className="grid grid-cols-3 gap-3">
-              {allColumnNames.map((col) => (
-                <label key={col} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer hover:text-black">
-                  <Checkbox
-                    checked={editColumnsTemp.includes(col)}
-                    onCheckedChange={() => toggleEditColumn(col)}
-                  />
-                  <span>{col}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center gap-3 pt-2">
-            <Button onClick={handleEditRulesApply}>
-              Apply
-            </Button>
-            <Button variant="secondary" onClick={() => setShowEditRulesDialog(false)}>
               Cancel
             </Button>
           </div>

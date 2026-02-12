@@ -147,6 +147,19 @@ const RuleConfigurator = () => {
       return;
     }
 
+    // Duplicate rule name check
+    const duplicate = savedRules.find(
+      (r) => r.ruleName.toLowerCase() === ruleName.trim().toLowerCase() && r.id !== editingRuleId
+    );
+    if (duplicate) {
+      toast({
+        title: "Duplicate rule name",
+        description: `A rule named "${duplicate.ruleName}" already exists. Please use a different name.`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (editingRuleId) {
       setSavedRules((prev) =>
         prev.map((r) =>
