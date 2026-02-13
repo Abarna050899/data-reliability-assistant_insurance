@@ -35,7 +35,7 @@ const DEFAULT_RULES: SavedRule[] = [
     ruleName: "Null check",
     dqDimension: "Accuracy",
     comments: "Check for null values in critical fields",
-    ruleFormula: "SELECT * FROM table WHERE column IS NULL",
+    ruleFormula: "IF(column is NOT NULL)? TRUE : FALSE",
     createdBy: "John Smith",
     createdOn: new Date("2025-01-15"),
     lastModified: new Date("2025-01-20"),

@@ -403,12 +403,12 @@ const RuleConfigurator = () => {
 
             {/* Rule Check Formula */}
             <div>
-              <Label htmlFor="ruleFormula">Rule Check Formula (SQL / Expression)</Label>
+              <Label htmlFor="ruleFormula">Rule Validation Formula</Label>
               <Textarea
                 id="ruleFormula"
                 value={ruleFormula}
                 onChange={(e) => setRuleFormula(e.target.value)}
-                placeholder="SELECT * FROM table WHERE condition..."
+                placeholder="IF(condition)? TRUE : FALSE"
                 className="mt-1.5 min-h-[120px] resize-none font-mono text-sm bg-secondary/50"
               />
             </div>
