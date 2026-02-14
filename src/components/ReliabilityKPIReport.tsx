@@ -1,22 +1,22 @@
-import { useMemo } from "react";
-import { Download } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DataTable from "./DataTable";
+import DQReportDialog from "./DQReportDialog";
 
 interface ReliabilityKPIReportProps {
   data: Record<string, unknown>[];
   title?: string;
+  fileName?: string;
 }
 
-interface KPIRecord {
-  column: string;
-  accuracy: number;
-  completeness: number;
-  uniqueness_dup_count: number;
-  overall_score: number;
-}
+const ReliabilityKPIReport = ({
+  data,
+  title = "Data Reliability KPIs",
+  fileName = "synthetic_data_for_testing",
+}: ReliabilityKPIReportProps) => {
+  const [showDQReport, setShowDQReport] = useState(false);
 
-const ReliabilityKPIReport = ({ data, title = "Data Reliability KPIs" }: ReliabilityKPIReportProps) => {
   const kpiData = useMemo(() => {
     if (data.length === 0) return [];
 
@@ -24,24 +24,15 @@ const ReliabilityKPIReport = ({ data, title = "Data Reliability KPIs" }: Reliabi
     const totalRows = data.length;
 
     return columns.map((col) => {
-      // Count non-null values
       const nonNullCount = data.filter(
         (row) => row[col] !== null && row[col] !== undefined && row[col] !== ""
       ).length;
       const nonNullPct = (nonNullCount / totalRows) * 100;
-
-      // Accuracy: 100 if complete, otherwise percentage
       const accuracyScore = nonNullPct === 100 ? 100 : Math.round(nonNullPct * 100) / 100;
-
-      // Completeness
       const nullCount = totalRows - nonNullCount;
-
-      // Uniqueness: count duplicates
       const values = data.map((row) => String(row[col]));
       const uniqueValues = new Set(values);
       const duplicateCount = values.length - uniqueValues.size;
-
-      // Overall quality score with weighting
       const qualityScore = 100 - (nullCount / totalRows) * 100 * 0.5;
 
       return {
@@ -58,34 +49,6 @@ const ReliabilityKPIReport = ({ data, title = "Data Reliability KPIs" }: Reliabi
     return [...kpiData].sort((a, b) => b.overall_score - a.overall_score);
   }, [kpiData]);
 
-  const handleDownloadPDF = () => {
-    // Create a simple text-based report (PDF generation would require a library)
-    const headers = ["Column", "Accuracy", "Completeness (%)", "Uniqueness (Dup count)", "Overall Score"];
-    const rows = sortedKpiData.map((row) => [
-      row.column,
-      row.accuracy,
-      row.completeness,
-      row.uniqueness_dup_count,
-      row.overall_score,
-    ]);
-
-    const content = [
-      "Data Reliability KPIs Report",
-      "=" .repeat(50),
-      "",
-      headers.join(" | "),
-      "-".repeat(80),
-      ...rows.map((row) => row.join(" | ")),
-    ].join("\n");
-
-    const blob = new Blob([content], { type: "text/plain;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "data_reliability_report.txt";
-    link.click();
-  };
-
-  // Transform for DataTable display
   const tableData = sortedKpiData.map((row) => ({
     Column: row.column,
     Accuracy: row.accuracy,
@@ -97,10 +60,17 @@ const ReliabilityKPIReport = ({ data, title = "Data Reliability KPIs" }: Reliabi
   return (
     <div className="space-y-4">
       <DataTable title={title} data={tableData} />
-      <Button onClick={handleDownloadPDF} className="gap-2">
-        <Download className="w-4 h-4" />
-        Download Data Reliability Report
+      <Button onClick={() => setShowDQReport(true)} className="gap-2">
+        <Eye className="w-4 h-4" />
+        View Data Reliability Report
       </Button>
+
+      <DQReportDialog
+        open={showDQReport}
+        onOpenChange={setShowDQReport}
+        kpiData={tableData}
+        fileName={fileName}
+      />
     </div>
   );
 };
