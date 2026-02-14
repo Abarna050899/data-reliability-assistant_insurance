@@ -479,6 +479,7 @@ const Dashboard = () => {
                               <ReliabilityKPIReport
                                 data={syntheticTestData}
                                 title="Data Reliability KPIs"
+                                fileName={selectedFile?.name?.replace(/\.[^/.]+$/, "") || "synthetic_data_for_testing"}
                               />
                             </CardContent>
                           </Card>
