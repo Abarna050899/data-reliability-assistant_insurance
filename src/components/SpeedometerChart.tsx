@@ -33,7 +33,8 @@ const SpeedometerChart = ({ value, title, size = 220 }: SpeedometerChartProps) =
     const x1Inner = cx + r1 * Math.cos(startAngle);
     const y1Inner = cy - r1 * Math.sin(startAngle);
     const largeArc = Math.abs(endAngle - startAngle) > Math.PI ? 1 : 0;
-    return `M ${x1Outer} ${y1Outer} A ${r2} ${r2} 0 ${largeArc} 1 ${x2Outer} ${y2Outer} L ${x2Inner} ${y2Inner} A ${r1} ${r1} 0 ${largeArc} 0 ${x1Inner} ${y1Inner} Z`;
+    return `M ${x1Outer} ${y1Outer} A ${r2} ${r2} 0 ${largeArc} 1 ${x2Outer} ${y2Outer} L ${x2Inner} ${y2Inner}
+     A ${r1} ${r1} 0 ${largeArc} 0 ${x1Inner} ${y1Inner} Z`;
   };
 
   // Background tick segments (outer grey ring)
@@ -180,7 +181,7 @@ const SpeedometerChart = ({ value, title, size = 220 }: SpeedometerChartProps) =
       </div>
 
       {/* Legend row for NA dimensions */}
-      {isNA && (
+      {/* {isNA && (
         <div className="flex items-center gap-3 mt-2">
           <div className="flex items-center gap-1">
             <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#ef4444" }} />
@@ -195,7 +196,7 @@ const SpeedometerChart = ({ value, title, size = 220 }: SpeedometerChartProps) =
             <span className="text-xs text-gray-600 font-medium">Good</span>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
