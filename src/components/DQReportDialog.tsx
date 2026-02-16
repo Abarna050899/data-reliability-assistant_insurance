@@ -141,25 +141,40 @@ const DQReportDialog = ({
         </DialogHeader>
 
         {/* Top row: file name left, date + download right */}
-        <div className="flex items-start justify-between flex-wrap gap-2">
-          <div>
-            <span className="text-sm text-gray-500">Dataset:</span>{" "}
-            <span className="text-sm font-semibold text-gray-800">
-              {fileName}
-            </span>
-          </div>
-          <div className="flex flex-col items-end gap-2">
-            <span className="text-sm text-gray-600">{getISTDateTime()} (IST)</span>
-            <Button
-              size="sm"
-              className="gap-2"
-              onClick={handleDownloadReport}
-            >
-              <Download className="w-4 h-4" />
-              Download DQ Report
-            </Button>
-          </div>
-        </div>
+  <div className="flex items-start justify-between flex-wrap gap-2">
+  <div>
+    <span className="text-sm text-gray-500">Dataset:</span>{" "}
+    <span className="text-sm font-semibold text-gray-800">{fileName}</span>
+  </div>
+  <div className="flex flex-col items-end gap-2">
+    <span className="text-sm text-gray-600">{getISTDateTime()} (IST)</span>
+    <div className="flex gap-2">
+      {/* Existing Download DQ Report button */}
+      <Button
+        size="sm"
+        className="gap-2"
+        onClick={handleDownloadReport}
+      >
+        <Download className="w-4 h-4" />
+        Download DQ Report
+      </Button>
+
+      {/* New Configure Speedometer Thresholds button */}
+      <Button
+        size="sm"
+        className="gap-2"
+        onClick={() => {
+          // Handle Configure Speedometer Thresholds click here
+          console.log("Configure Speedometer Thresholds clicked");
+        }}
+      >
+        {/* You can add an icon here if you want */}
+        Configure Speedometer Thresholds
+      </Button>
+    </div>
+  </div>
+</div>
+
 
         {/* Visual report content (also used for download) */}
         <div ref={reportRef}>
@@ -182,7 +197,7 @@ const DQReportDialog = ({
           {/* Individual Dimension Gauges */}
           <div className="mt-6">
             <h3 className="text-lg font-bold mb-4 text-center" style={{ color: "#1e3a5f" }}>
-              Individual DQ Dimensions
+               DQ Dimension Scorecards
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               {DQ_DIMENSIONS.map((dim) => (
