@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Search, ZoomIn, X } from "lucide-react";
+import { Download, Search, ZoomIn, X, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,15 +17,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { isPIIColumn, maskPIIValue } from "@/lib/piiUtils";
 
 interface DataTableProps {
   title: string;
   data: Record<string, unknown>[];
   className?: string;
+  highlightPII?: boolean;
 }
 
-const DataTable = ({ title, data, className }: DataTableProps) => {
+const DataTable = ({ title, data, className, highlightPII = false }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -40,11 +47,15 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
     )
   );
 
+  const piiColumns = highlightPII ? columns.filter(isPIIColumn) : [];
+
   const handleDownloadCSV = () => {
     const headers = columns.join(",");
     const rows = filteredData.map((row) =>
       columns.map((col) => {
-        const value = row[col];
+        const rawValue = row[col];
+        // Always mask PII in downloads when highlighting is enabled
+        const value = highlightPII && isPIIColumn(col) ? maskPIIValue(rawValue, col) : rawValue;
         if (typeof value === "string" && (value.includes(",") || value.includes('"'))) {
           return `"${value.replace(/"/g, '""')}"`;
         }
@@ -68,14 +79,32 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
             <TableHeader>
               <TableRow className="bg-gray-200">
                 <TableHead className="w-12 font-semibold text-gray-900 sticky left-0 bg-gray-200 z-10">#</TableHead>
-                {columns.map((col) => (
-                  <TableHead 
-                    key={col} 
-                    className="font-semibold text-gray-900 min-w-[120px] whitespace-nowrap bg-gray-200"
-                  >
-                    {col.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-                  </TableHead>
-                ))}
+                {columns.map((col) => {
+                  const isPII = piiColumns.includes(col);
+                  return (
+                    <TableHead 
+                      key={col} 
+                      className={cn(
+                        "font-semibold min-w-[120px] whitespace-nowrap",
+                        isPII ? "bg-amber-100 text-amber-900" : "text-gray-900 bg-gray-200"
+                      )}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        {col.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                        {isPII && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <ShieldAlert className="w-3.5 h-3.5 text-amber-600 inline-block flex-shrink-0" />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="bg-amber-50 text-amber-900 border-amber-200 text-xs">
+                              PII Field – Masked in downloads
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </span>
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -84,17 +113,26 @@ const DataTable = ({ title, data, className }: DataTableProps) => {
                   <TableCell className="text-gray-600 font-mono text-sm sticky left-0 bg-white z-10">
                     {idx + 1}
                   </TableCell>
-                    {columns.map((col) => (
-                      <TableCell key={col} className="min-w-[150px] max-w-[300px] whitespace-nowrap overflow-hidden text-ellipsis text-gray-800">
-                        {row[col] === null || row[col] === undefined ? (
-                          <span className="text-red-500 italic text-sm">null</span>
-                        ) : (
-                          <span className="block truncate" title={String(row[col])}>
-                            {String(row[col])}
-                          </span>
-                        )}
-                      </TableCell>
-                    ))}
+                    {columns.map((col) => {
+                      const isPII = piiColumns.includes(col);
+                      return (
+                        <TableCell 
+                          key={col} 
+                          className={cn(
+                            "min-w-[150px] max-w-[300px] whitespace-nowrap overflow-hidden text-ellipsis",
+                            isPII ? "bg-amber-50 text-amber-800" : "text-gray-800"
+                          )}
+                        >
+                          {row[col] === null || row[col] === undefined ? (
+                            <span className="text-red-500 italic text-sm">null</span>
+                          ) : (
+                            <span className="block truncate" title={String(row[col])}>
+                              {String(row[col])}
+                            </span>
+                          )}
+                        </TableCell>
+                      );
+                    })}
                 </TableRow>
               ))}
             </TableBody>
