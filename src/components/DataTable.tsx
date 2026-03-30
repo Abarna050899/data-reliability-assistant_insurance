@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download, Search, ZoomIn, X } from "lucide-react";
+import { Download, Search, ZoomIn, X, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,7 +17,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
+import { isPIIColumn, maskPIIValue } from "@/lib/piiUtils";
 
 interface DataTableProps {
   title: string;
