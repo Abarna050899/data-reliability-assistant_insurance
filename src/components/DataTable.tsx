@@ -32,7 +32,7 @@ interface DataTableProps {
   highlightPII?: boolean;
 }
 
-const DataTable = ({ title, data, className }: DataTableProps) => {
+const DataTable = ({ title, data, className, highlightPII = false }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
