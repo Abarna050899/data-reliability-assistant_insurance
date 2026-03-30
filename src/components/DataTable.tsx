@@ -113,17 +113,26 @@ const DataTable = ({ title, data, className, highlightPII = false }: DataTablePr
                   <TableCell className="text-gray-600 font-mono text-sm sticky left-0 bg-white z-10">
                     {idx + 1}
                   </TableCell>
-                    {columns.map((col) => (
-                      <TableCell key={col} className="min-w-[150px] max-w-[300px] whitespace-nowrap overflow-hidden text-ellipsis text-gray-800">
-                        {row[col] === null || row[col] === undefined ? (
-                          <span className="text-red-500 italic text-sm">null</span>
-                        ) : (
-                          <span className="block truncate" title={String(row[col])}>
-                            {String(row[col])}
-                          </span>
-                        )}
-                      </TableCell>
-                    ))}
+                    {columns.map((col) => {
+                      const isPII = piiColumns.includes(col);
+                      return (
+                        <TableCell 
+                          key={col} 
+                          className={cn(
+                            "min-w-[150px] max-w-[300px] whitespace-nowrap overflow-hidden text-ellipsis",
+                            isPII ? "bg-amber-50 text-amber-800" : "text-gray-800"
+                          )}
+                        >
+                          {row[col] === null || row[col] === undefined ? (
+                            <span className="text-red-500 italic text-sm">null</span>
+                          ) : (
+                            <span className="block truncate" title={String(row[col])}>
+                              {String(row[col])}
+                            </span>
+                          )}
+                        </TableCell>
+                      );
+                    })}
                 </TableRow>
               ))}
             </TableBody>
