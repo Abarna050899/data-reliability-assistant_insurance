@@ -29,6 +29,7 @@ interface DataTableProps {
   title: string;
   data: Record<string, unknown>[];
   className?: string;
+  highlightPII?: boolean;
 }
 
 const DataTable = ({ title, data, className }: DataTableProps) => {
