@@ -79,14 +79,32 @@ const DataTable = ({ title, data, className, highlightPII = false }: DataTablePr
             <TableHeader>
               <TableRow className="bg-gray-200">
                 <TableHead className="w-12 font-semibold text-gray-900 sticky left-0 bg-gray-200 z-10">#</TableHead>
-                {columns.map((col) => (
-                  <TableHead 
-                    key={col} 
-                    className="font-semibold text-gray-900 min-w-[120px] whitespace-nowrap bg-gray-200"
-                  >
-                    {col.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
-                  </TableHead>
-                ))}
+                {columns.map((col) => {
+                  const isPII = piiColumns.includes(col);
+                  return (
+                    <TableHead 
+                      key={col} 
+                      className={cn(
+                        "font-semibold min-w-[120px] whitespace-nowrap",
+                        isPII ? "bg-amber-100 text-amber-900" : "text-gray-900 bg-gray-200"
+                      )}
+                    >
+                      <span className="flex items-center gap-1.5">
+                        {col.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+                        {isPII && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <ShieldAlert className="w-3.5 h-3.5 text-amber-600 inline-block flex-shrink-0" />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="bg-amber-50 text-amber-900 border-amber-200 text-xs">
+                              PII Field – Masked in downloads
+                            </TooltipContent>
+                          </Tooltip>
+                        )}
+                      </span>
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             </TableHeader>
             <TableBody>
