@@ -31,7 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Send, Trash2, CheckCircle2, Loader2, Eye, CloudUpload } from "lucide-react";
+import { Upload, Send, Trash2, CheckCircle2, Loader2, Eye, CloudUpload, ShieldAlert } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
