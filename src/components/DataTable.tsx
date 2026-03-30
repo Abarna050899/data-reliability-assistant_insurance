@@ -47,11 +47,15 @@ const DataTable = ({ title, data, className, highlightPII = false }: DataTablePr
     )
   );
 
+  const piiColumns = highlightPII ? columns.filter(isPIIColumn) : [];
+
   const handleDownloadCSV = () => {
     const headers = columns.join(",");
     const rows = filteredData.map((row) =>
       columns.map((col) => {
-        const value = row[col];
+        const rawValue = row[col];
+        // Always mask PII in downloads when highlighting is enabled
+        const value = highlightPII && isPIIColumn(col) ? maskPIIValue(rawValue, col) : rawValue;
         if (typeof value === "string" && (value.includes(",") || value.includes('"'))) {
           return `"${value.replace(/"/g, '""')}"`;
         }
