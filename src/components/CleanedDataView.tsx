@@ -33,7 +33,8 @@ const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
       const rows = cleanedData.map((row) =>
         columns
           .map((col) => {
-            const value = row[col];
+            const rawValue = row[col];
+            const value = isPIIColumn(col) ? maskPIIValue(rawValue, col) : rawValue;
             if (typeof value === "string" && (value.includes(",") || value.includes('"'))) {
               return `"${value.replace(/"/g, '""')}"`;
             }
