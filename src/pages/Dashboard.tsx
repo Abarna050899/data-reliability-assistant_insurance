@@ -437,6 +437,7 @@ const Dashboard = () => {
                                 <DataTable
                                   title="Preview of Uploaded Data"
                                   data={syntheticTestData}
+                                  highlightPII
                                 />
                               </CardContent>
                             </Card>

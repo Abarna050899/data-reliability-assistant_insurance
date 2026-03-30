@@ -45,13 +45,23 @@ const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
       const csv = [headers, ...rows].join("\n");
       downloadFile(csv, "cleaned_dqdata.csv", "text/csv;charset=utf-8;");
     } else if (downloadFormat === "JSON") {
-      const json = JSON.stringify(cleanedData, null, 2);
+      // Mask PII in JSON export
+      const maskedData = cleanedData.map(row => {
+        const masked: Record<string, unknown> = {};
+        for (const col of columns) {
+          masked[col] = isPIIColumn(col) ? maskPIIValue(row[col], col) : row[col];
+        }
+        return masked;
+      });
+      const json = JSON.stringify(maskedData, null, 2);
       downloadFile(json, "cleaned_dqdata.json", "application/json");
     } else if (downloadFormat === "XLSX") {
-      // For XLSX, we'll create a simple TSV that can be opened in Excel
       const headers = columns.join("\t");
       const rows = cleanedData.map((row) =>
-        columns.map((col) => row[col] ?? "").join("\t")
+        columns.map((col) => {
+          const rawValue = row[col];
+          return isPIIColumn(col) ? maskPIIValue(rawValue, col) : (rawValue ?? "");
+        }).join("\t")
       );
       const tsv = [headers, ...rows].join("\n");
       downloadFile(tsv, "cleaned_dqdata.tsv", "text/tab-separated-values;charset=utf-8;");
