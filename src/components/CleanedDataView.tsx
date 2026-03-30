@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Download } from "lucide-react";
+import { maskPIIValue, isPIIColumn } from "@/lib/piiUtils";
 import { Button } from "@/components/ui/button";
 import {
   Select,
