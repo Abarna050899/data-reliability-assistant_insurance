@@ -526,7 +526,7 @@ const Dashboard = () => {
                                     <strong>PII Masking Active:</strong> All PII columns will be masked when you download data from this view.
                                   </span>
                                 </div>
-                                <MaskPIIDownloadControls data={cleanedData} />
+                                <PiiDownloadControls data={cleanedData} />
                               </CardContent>
                             </Card>
                           </>
