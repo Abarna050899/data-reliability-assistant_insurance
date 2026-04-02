@@ -33,7 +33,7 @@ interface DataTableProps {
   maskPIIDownload?: boolean;
 }
 
-const DataTable = ({ title, data, className, highlightPII = false }: DataTableProps) => {
+const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownload = false }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
