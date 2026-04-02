@@ -10,6 +10,7 @@ import AppFooter from "@/components/AppFooter";
 import DataTable from "@/components/DataTable";
 import ReliabilityKPIReport from "@/components/ReliabilityKPIReport";
 import CleanedDataView from "@/components/CleanedDataView";
+import PiiDownloadControls from "@/components/PiiDownloadControls";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import RuleConfigurator from "@/components/RuleConfigurator";
 import { Button } from "@/components/ui/button";
@@ -526,7 +527,7 @@ const Dashboard = () => {
                                     <strong>PII Masking Active:</strong> All PII columns will be masked when you download data from this view.
                                   </span>
                                 </div>
-                                <CleanedDataView originalData={cleanedData} maskPIIDownload />
+                                <PiiDownloadControls data={cleanedData} />
                               </CardContent>
                             </Card>
                           </>
