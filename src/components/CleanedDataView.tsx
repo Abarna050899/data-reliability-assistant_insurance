@@ -61,7 +61,7 @@ const CleanedDataView = ({ originalData, maskPIIDownload = false }: CleanedDataV
       const rows = cleanedData.map((row) =>
         columns.map((col) => {
           const rawValue = row[col];
-          return isPIIColumn(col) ? maskPIIValue(rawValue, col) : (rawValue ?? "");
+          return maskPIIDownload && isPIIColumn(col) ? maskPIIValue(rawValue, col) : (rawValue ?? "");
         }).join("\t")
       );
       const tsv = [headers, ...rows].join("\n");

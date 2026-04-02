@@ -444,7 +444,7 @@ const Dashboard = () => {
                                 <div className="flex items-center gap-2 mt-3 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
                                   <ShieldAlert className="w-4 h-4 text-amber-600 flex-shrink-0" />
                                   <span>
-                                    <strong>PII Detected:</strong> Columns highlighted in amber contain Personally Identifiable Information (customer_id, age, account_created_date, emotion, Post, URL). PII data will be automatically masked in all downloads.
+                                    <strong>PII Detected:</strong> Columns highlighted in amber contain Personally Identifiable Information (customer_id, age, account_created_date, emotion, Post, URL). To mask PII data in downloads, use the query: <em>"mask the PII data for download"</em>.
                                   </span>
                                 </div>
                               </CardContent>

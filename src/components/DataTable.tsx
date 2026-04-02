@@ -55,8 +55,8 @@ const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownlo
     const rows = filteredData.map((row) =>
       columns.map((col) => {
         const rawValue = row[col];
-        // Always mask PII in downloads when highlighting is enabled
-        const value = highlightPII && isPIIColumn(col) ? maskPIIValue(rawValue, col) : rawValue;
+        // Only mask PII in downloads when explicitly requested
+        const value = maskPIIDownload && isPIIColumn(col) ? maskPIIValue(rawValue, col) : rawValue;
         if (typeof value === "string" && (value.includes(",") || value.includes('"'))) {
           return `"${value.replace(/"/g, '""')}"`;
         }
