@@ -13,9 +13,10 @@ import DataTable from "./DataTable";
 
 interface CleanedDataViewProps {
   originalData: Record<string, unknown>[];
+  maskPIIDownload?: boolean;
 }
 
-const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
+const CleanedDataView = ({ originalData, maskPIIDownload = false }: CleanedDataViewProps) => {
   const [downloadFormat, setDownloadFormat] = useState<string>("CSV");
 
   // Clean data: remove rows with null/empty values
@@ -34,7 +35,7 @@ const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
         columns
           .map((col) => {
             const rawValue = row[col];
-            const value = isPIIColumn(col) ? maskPIIValue(rawValue, col) : rawValue;
+            const value = maskPIIDownload && isPIIColumn(col) ? maskPIIValue(rawValue, col) : rawValue;
             if (typeof value === "string" && (value.includes(",") || value.includes('"'))) {
               return `"${value.replace(/"/g, '""')}"`;
             }
@@ -49,7 +50,7 @@ const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
       const maskedData = cleanedData.map(row => {
         const masked: Record<string, unknown> = {};
         for (const col of columns) {
-          masked[col] = isPIIColumn(col) ? maskPIIValue(row[col], col) : row[col];
+          masked[col] = maskPIIDownload && isPIIColumn(col) ? maskPIIValue(row[col], col) : row[col];
         }
         return masked;
       });
@@ -60,7 +61,7 @@ const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
       const rows = cleanedData.map((row) =>
         columns.map((col) => {
           const rawValue = row[col];
-          return isPIIColumn(col) ? maskPIIValue(rawValue, col) : (rawValue ?? "");
+          return maskPIIDownload && isPIIColumn(col) ? maskPIIValue(rawValue, col) : (rawValue ?? "");
         }).join("\t")
       );
       const tsv = [headers, ...rows].join("\n");

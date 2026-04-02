@@ -37,7 +37,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { ColumnInfo } from "@/contexts/UploadedColumnsContext";
 
-type QueryMode = "preview" | "kpi_report" | "clean_data";
+type QueryMode = "preview" | "kpi_report" | "clean_data" | "mask_pii";
 type ActiveView = "data-reliability" | "rule-configurator";
 
 interface ChatMessage {
@@ -124,6 +124,8 @@ const Dashboard = () => {
       return "kpi_report";
     } else if (lowerQuery.startsWith("please remove records") || lowerQuery.includes("remove null") || lowerQuery.includes("clean data")) {
       return "clean_data";
+    } else if (lowerQuery.includes("mask") && lowerQuery.includes("pii")) {
+      return "mask_pii";
     }
     return "preview";
   };
@@ -442,7 +444,7 @@ const Dashboard = () => {
                                 <div className="flex items-center gap-2 mt-3 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
                                   <ShieldAlert className="w-4 h-4 text-amber-600 flex-shrink-0" />
                                   <span>
-                                    <strong>PII Detected:</strong> Columns highlighted in amber contain Personally Identifiable Information (customer_id, age, account_created_date, emotion, Post, URL). PII data will be automatically masked in all downloads.
+                                    <strong>PII Detected:</strong> Columns highlighted in amber contain Personally Identifiable Information (customer_id, age, account_created_date, emotion, Post, URL). To mask PII data in downloads, use the query: <em>"mask the PII data for download"</em>.
                                   </span>
                                 </div>
                               </CardContent>
@@ -500,6 +502,27 @@ const Dashboard = () => {
                               />
                             </CardContent>
                           </Card>
+                        )}
+
+                        {chat.mode === "mask_pii" && (
+                          <>
+                            <Card className="shadow-sm border border-gray-200 bg-white">
+                              <CardContent className="pt-6">
+                                <DataTable
+                                  title="Preview of Uploaded Data (PII Masked for Download)"
+                                  data={syntheticTestData}
+                                  highlightPII
+                                  maskPIIDownload
+                                />
+                                <div className="flex items-center gap-2 mt-3 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-800">
+                                  <ShieldAlert className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                  <span>
+                                    <strong>PII Masking Active:</strong> All PII columns will be masked when you download data from this view.
+                                  </span>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </>
                         )}
                       </div>
                     ))}
