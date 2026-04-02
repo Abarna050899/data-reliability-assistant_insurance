@@ -124,6 +124,8 @@ const Dashboard = () => {
       return "kpi_report";
     } else if (lowerQuery.startsWith("please remove records") || lowerQuery.includes("remove null") || lowerQuery.includes("clean data")) {
       return "clean_data";
+    } else if (lowerQuery.includes("mask") && lowerQuery.includes("pii")) {
+      return "mask_pii";
     }
     return "preview";
   };
