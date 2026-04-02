@@ -504,13 +504,19 @@ const Dashboard = () => {
                           </Card>
                         )}
 
-                        {chat.mode === "mask_pii" && (
+                        {chat.mode === "mask_pii" && (() => {
+                          const cleanedData = syntheticTestData.filter((row) =>
+                            Object.values(row).every(
+                              (value) => value !== null && value !== undefined && value !== ""
+                            )
+                          );
+                          return (
                           <>
                             <Card className="shadow-sm border border-gray-200 bg-white">
                               <CardContent className="pt-6">
                                 <DataTable
-                                  title="Preview of Uploaded Data (PII Masked for Download)"
-                                  data={syntheticTestData}
+                                  title="Cleaned Data Preview (PII Masked for Download)"
+                                  data={cleanedData}
                                   highlightPII
                                   maskPIIDownload
                                 />
@@ -520,11 +526,12 @@ const Dashboard = () => {
                                     <strong>PII Masking Active:</strong> All PII columns will be masked when you download data from this view.
                                   </span>
                                 </div>
-                                <CleanedDataView originalData={syntheticTestData} maskPIIDownload />
+                                <CleanedDataView originalData={cleanedData} maskPIIDownload />
                               </CardContent>
                             </Card>
                           </>
-                        )}
+                          );
+                        })()}
                       </div>
                     ))}
                   </div>
