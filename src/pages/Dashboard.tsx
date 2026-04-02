@@ -503,6 +503,27 @@ const Dashboard = () => {
                             </CardContent>
                           </Card>
                         )}
+
+                        {chat.mode === "mask_pii" && (
+                          <>
+                            <Card className="shadow-sm border border-gray-200 bg-white">
+                              <CardContent className="pt-6">
+                                <DataTable
+                                  title="Preview of Uploaded Data (PII Masked for Download)"
+                                  data={syntheticTestData}
+                                  highlightPII
+                                  maskPIIDownload
+                                />
+                                <div className="flex items-center gap-2 mt-3 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-800">
+                                  <ShieldAlert className="w-4 h-4 text-green-600 flex-shrink-0" />
+                                  <span>
+                                    <strong>PII Masking Active:</strong> All PII columns will be masked when you download data from this view.
+                                  </span>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </>
+                        )
                       </div>
                     ))}
                   </div>
