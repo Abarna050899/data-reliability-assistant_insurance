@@ -16,7 +16,7 @@ interface CleanedDataViewProps {
   maskPIIDownload?: boolean;
 }
 
-const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
+const CleanedDataView = ({ originalData, maskPIIDownload = false }: CleanedDataViewProps) => {
   const [downloadFormat, setDownloadFormat] = useState<string>("CSV");
 
   // Clean data: remove rows with null/empty values
