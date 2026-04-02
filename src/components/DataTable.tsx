@@ -30,6 +30,7 @@ interface DataTableProps {
   data: Record<string, unknown>[];
   className?: string;
   highlightPII?: boolean;
+  maskPIIDownload?: boolean;
 }
 
 const DataTable = ({ title, data, className, highlightPII = false }: DataTableProps) => {
