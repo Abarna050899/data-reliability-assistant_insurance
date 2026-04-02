@@ -10,6 +10,7 @@ import AppFooter from "@/components/AppFooter";
 import DataTable from "@/components/DataTable";
 import ReliabilityKPIReport from "@/components/ReliabilityKPIReport";
 import CleanedDataView from "@/components/CleanedDataView";
+import PiiDownloadControls from "@/components/PiiDownloadControls";
 import ScrollToTopButton from "@/components/ScrollToTopButton";
 import RuleConfigurator from "@/components/RuleConfigurator";
 import { Button } from "@/components/ui/button";
