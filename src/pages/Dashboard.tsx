@@ -37,7 +37,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { ColumnInfo } from "@/contexts/UploadedColumnsContext";
 
-type QueryMode = "preview" | "kpi_report" | "clean_data";
+type QueryMode = "preview" | "kpi_report" | "clean_data" | "mask_pii";
 type ActiveView = "data-reliability" | "rule-configurator";
 
 interface ChatMessage {
