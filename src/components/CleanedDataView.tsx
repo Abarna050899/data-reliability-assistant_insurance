@@ -13,6 +13,7 @@ import DataTable from "./DataTable";
 
 interface CleanedDataViewProps {
   originalData: Record<string, unknown>[];
+  maskPIIDownload?: boolean;
 }
 
 const CleanedDataView = ({ originalData }: CleanedDataViewProps) => {
