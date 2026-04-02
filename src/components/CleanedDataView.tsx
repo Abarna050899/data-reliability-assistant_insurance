@@ -50,7 +50,7 @@ const CleanedDataView = ({ originalData, maskPIIDownload = false }: CleanedDataV
       const maskedData = cleanedData.map(row => {
         const masked: Record<string, unknown> = {};
         for (const col of columns) {
-          masked[col] = isPIIColumn(col) ? maskPIIValue(row[col], col) : row[col];
+          masked[col] = maskPIIDownload && isPIIColumn(col) ? maskPIIValue(row[col], col) : row[col];
         }
         return masked;
       });
