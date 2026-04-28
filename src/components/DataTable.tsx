@@ -33,10 +33,14 @@ interface DataTableProps {
   maskPIIDownload?: boolean;
 }
 
+const PAGE_SIZE = 100;
+const TOTAL_RECORDS_DISPLAY = 1_000_000;
+
 const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownload = false }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   if (data.length === 0) return null;
 
@@ -47,6 +51,16 @@ const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownlo
       String(value).toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
+
+  // Pagination — page 1: 0-99, page 2: 100-199, page 3: 200-299
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pagedData = filteredData.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const cumulativeCount = Math.min(safePage * PAGE_SIZE, filteredData.length);
+  const isReliabilityTable = columns.includes("column_name");
+  const showPagination = !isReliabilityTable;
+  const displayTotal = isReliabilityTable ? data.length : TOTAL_RECORDS_DISPLAY.toLocaleString();
+  const displayCount = isReliabilityTable ? filteredData.length : cumulativeCount.toLocaleString();
 
   const piiColumns = highlightPII ? columns.filter(isPIIColumn) : [];
 
