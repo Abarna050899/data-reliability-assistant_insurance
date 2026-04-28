@@ -1,13 +1,12 @@
 // PII (Personally Identifiable Information) detection and masking utilities
 
-// Column names that are considered PII for travel/marketing data
+// Column names that are considered PII for insurance/vitality data
 const PII_COLUMN_PATTERNS: string[] = [
-  "customer_id",
+  "member_id",
   "age",
-  "account_created_date",
-  "emotion",
-  "Post",
-  "URL",
+  "last_app_login_date",
+  "city",
+  "last_claim_date",
 ];
 
 /**
@@ -36,34 +35,23 @@ export function maskPIIValue(value: unknown, columnName: string): string {
   const strValue = String(value);
   const lower = columnName.toLowerCase().replace(/\s+/g, "_");
 
-  if (lower === "customer_id") {
-    // Show first 4 chars, mask rest: CUST**** 
-    if (strValue.length <= 4) return "****";
-    return strValue.substring(0, 4) + "****";
+  if (lower === "member_id") {
+    if (strValue.length <= 1) return "*";
+    return strValue.substring(0, 1) + "***";
   }
 
   if (lower === "age") {
     return "**";
   }
 
-  if (lower === "account_created_date") {
-    // Show only year
+  if (lower === "city") {
+    if (strValue.length <= 2) return "**";
+    return strValue.substring(0, 2) + "***";
+  }
+
+  if (lower === "last_app_login_date" || lower === "last_claim_date") {
     const yearMatch = strValue.match(/^\d{4}/);
     return yearMatch ? `${yearMatch[0]}-**-**` : "****-**-**";
-  }
-
-  if (lower === "url") {
-    return "https://***masked***";
-  }
-
-  if (lower === "post") {
-    // Show first 10 chars then mask
-    if (strValue.length <= 10) return "***";
-    return strValue.substring(0, 10) + "***";
-  }
-
-  if (lower === "emotion") {
-    return "***";
   }
 
   // Generic masking
