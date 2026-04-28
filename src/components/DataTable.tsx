@@ -123,10 +123,10 @@ const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownlo
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredData.map((row, idx) => (
+              {pagedData.map((row, idx) => (
                 <TableRow key={idx} className="hover:bg-gray-50 transition-colors">
                   <TableCell className="text-gray-600 font-mono text-sm sticky left-0 bg-white z-10">
-                    {idx + 1}
+                    {(safePage - 1) * PAGE_SIZE + idx + 1}
                   </TableCell>
                     {columns.map((col) => {
                       const isPII = piiColumns.includes(col);
