@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSavedRules } from "@/contexts/SavedRulesContext";
 import { useUploadedColumns } from "@/contexts/UploadedColumnsContext";
-import { syntheticTestData, dataReliabilityCheckData } from "@/data/syntheticData";
+import { syntheticTestData, dataReliabilityCheckData, recommendedDQRules } from "@/data/syntheticData";
 import AppHeader from "@/components/AppHeader";
 import AppSidebar from "@/components/AppSidebar";
 import AppFooter from "@/components/AppFooter";
@@ -241,14 +241,10 @@ const Dashboard = () => {
     data_type: row.data_type,
     null_check_eligibility: row.null_check_eligibility,
     format_check: row.format_check,
-    rule_name: selectedColumns.includes(row.column_name) ? "Yes" : "No",
+    rule_applied: selectedColumns.includes(row.column_name) ? "Yes" : "-",
   }));
 
-  // Get executor rules for the popup — must be Active AND have Executor permission
-  const executorRules = savedRules.filter((rule) =>
-    rule.status === "Active" &&
-    rule.permissions.some((p) => p.role === "Executor")
-  );
+  // (executor rules dialog replaced by recommended rules dialog)
 
   // Delete rule handler
   const handleDeleteRule = () => {
@@ -470,7 +466,7 @@ const Dashboard = () => {
                                 }}
                               >
                                 <Eye className="w-4 h-4" />
-                                View Saved Rules
+                                View Recommended Rules
                               </Button>
                               <Button
                                 className="gap-2 bg-red-600 text-white hover:bg-red-700"
@@ -543,14 +539,14 @@ const Dashboard = () => {
         </main>
       </div>
 
-      {/* View Saved Rules Dialog */}
+      {/* Recommended Rules Dialog */}
       <Dialog open={showSavedRulesDialog} onOpenChange={setShowSavedRulesDialog}>
         <DialogContent className="max-w-3xl bg-white text-black border border-gray-200">
           <DialogHeader>
-            <DialogTitle className="text-black">Saved Rules (Executor Access)</DialogTitle>
+            <DialogTitle className="text-black">Recommended Data Quality Rules</DialogTitle>
           </DialogHeader>
 
-          {/* Executor Rules Table */}
+          {/* Recommended Rules Table */}
           <div className="border border-gray-200 rounded-lg overflow-hidden">
             <div className="max-h-[300px] overflow-y-auto">
               <Table>
@@ -559,60 +555,35 @@ const Dashboard = () => {
                     <TableHead className="w-12 text-black"></TableHead>
                     <TableHead className="text-black">Rule Name</TableHead>
                     <TableHead className="text-black">DQ Dimension</TableHead>
-                    <TableHead className="text-black">Status</TableHead>
-                    <TableHead className="text-black">Created On</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {executorRules.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center text-gray-500 py-8">
-                        No rules with Executor permissions found.
+                  {recommendedDQRules.map((rule) => (
+                    <TableRow
+                      key={rule.id}
+                      className={cn(
+                        "hover:bg-gray-50 cursor-pointer",
+                        selectedExecutorRuleId === rule.id && "bg-blue-50"
+                      )}
+                      onClick={() => setSelectedExecutorRuleId(rule.id)}
+                    >
+                      <TableCell>
+                        <input
+                          type="radio"
+                          name="executor-rule"
+                          checked={selectedExecutorRuleId === rule.id}
+                          onChange={() => setSelectedExecutorRuleId(rule.id)}
+                          className="w-4 h-4"
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium text-black">{rule.ruleName}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs border-gray-400 text-gray-800">
+                          {rule.dqDimension}
+                        </Badge>
                       </TableCell>
                     </TableRow>
-                  ) : (
-                    executorRules.map((rule) => (
-                      <TableRow
-                        key={rule.id}
-                        className={cn(
-                          "hover:bg-gray-50 cursor-pointer",
-                          selectedExecutorRuleId === rule.id && "bg-blue-50"
-                        )}
-                        onClick={() => setSelectedExecutorRuleId(rule.id)}
-                      >
-                        <TableCell>
-                          <input
-                            type="radio"
-                            name="executor-rule"
-                            checked={selectedExecutorRuleId === rule.id}
-                            onChange={() => setSelectedExecutorRuleId(rule.id)}
-                            className="w-4 h-4"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium text-black">{rule.ruleName}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-xs border-gray-400 text-gray-800">
-                            {rule.dqDimension}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            className={cn(
-                              "text-xs",
-                              rule.status === "Active"
-                                ? "bg-green-100 text-green-700 border-green-300"
-                                : "bg-gray-100 text-gray-600"
-                            )}
-                          >
-                            {rule.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-gray-600">
-                          {format(rule.createdOn, "MMM dd, yyyy")}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
+                  ))}
                 </TableBody>
               </Table>
             </div>
@@ -643,6 +614,17 @@ const Dashboard = () => {
               onClick={handleOpenColumnSelect}
             >
               Select Column
+            </Button>
+            <Button
+              className="bg-blue-600 text-white hover:bg-blue-700"
+              onClick={() => {
+                setSelectedColumns([...allColumnNames]);
+                setShowColumnSelectInDialog(false);
+                setShowSavedRulesDialog(false);
+                toast({ title: "All columns selected", description: "Rule Applied set to Yes for all columns." });
+              }}
+            >
+              Select All
             </Button>
             <Button
               onClick={showColumnSelectInDialog ? handleDialogColumnApply : handleDialogCancel}

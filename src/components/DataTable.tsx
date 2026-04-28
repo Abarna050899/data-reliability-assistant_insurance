@@ -33,10 +33,14 @@ interface DataTableProps {
   maskPIIDownload?: boolean;
 }
 
+const PAGE_SIZE = 100;
+const TOTAL_RECORDS_DISPLAY = 1_000_000;
+
 const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownload = false }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   if (data.length === 0) return null;
 
@@ -47,6 +51,16 @@ const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownlo
       String(value).toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
+
+  // Pagination — page 1: 0-99, page 2: 100-199, page 3: 200-299
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pagedData = filteredData.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const cumulativeCount = Math.min(safePage * PAGE_SIZE, filteredData.length);
+  const isReliabilityTable = columns.includes("column_name");
+  const showPagination = !isReliabilityTable;
+  const displayTotal = isReliabilityTable ? data.length : TOTAL_RECORDS_DISPLAY.toLocaleString();
+  const displayCount = isReliabilityTable ? filteredData.length : cumulativeCount.toLocaleString();
 
   const piiColumns = highlightPII ? columns.filter(isPIIColumn) : [];
 
@@ -109,10 +123,10 @@ const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownlo
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredData.map((row, idx) => (
+              {pagedData.map((row, idx) => (
                 <TableRow key={idx} className="hover:bg-gray-50 transition-colors">
                   <TableCell className="text-gray-600 font-mono text-sm sticky left-0 bg-white z-10">
-                    {idx + 1}
+                    {(safePage - 1) * PAGE_SIZE + idx + 1}
                   </TableCell>
                     {columns.map((col) => {
                       const isPII = piiColumns.includes(col);
@@ -204,13 +218,48 @@ const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownlo
           </Button>
 
           <span className="text-xs text-muted-foreground ml-2">
-            {filteredData.length} of {data.length} records
+            {displayCount} of {displayTotal} records
           </span>
         </div>
       </div>
 
       {/* Table */}
       <TableContent />
+
+      {/* Pagination Controls */}
+      {showPagination && totalPages > 1 && (
+        <div className="flex items-center justify-end gap-2 pt-1">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8"
+            disabled={safePage === 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          >
+            Previous
+          </Button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <Button
+              key={p}
+              variant={p === safePage ? "default" : "outline"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setCurrentPage(p)}
+            >
+              {p}
+            </Button>
+          ))}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8"
+            disabled={safePage === totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </Button>
+        </div>
+      )}
 
       {/* Zoom Dialog */}
       <Dialog open={isZoomed} onOpenChange={setIsZoomed}>
