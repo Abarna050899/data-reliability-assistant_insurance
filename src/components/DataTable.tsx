@@ -218,13 +218,48 @@ const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownlo
           </Button>
 
           <span className="text-xs text-muted-foreground ml-2">
-            {filteredData.length} of {data.length} records
+            {displayCount} of {displayTotal} records
           </span>
         </div>
       </div>
 
       {/* Table */}
       <TableContent />
+
+      {/* Pagination Controls */}
+      {showPagination && totalPages > 1 && (
+        <div className="flex items-center justify-end gap-2 pt-1">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8"
+            disabled={safePage === 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          >
+            Previous
+          </Button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <Button
+              key={p}
+              variant={p === safePage ? "default" : "outline"}
+              size="sm"
+              className="h-8 w-8 p-0"
+              onClick={() => setCurrentPage(p)}
+            >
+              {p}
+            </Button>
+          ))}
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8"
+            disabled={safePage === totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          >
+            Next
+          </Button>
+        </div>
+      )}
 
       {/* Zoom Dialog */}
       <Dialog open={isZoomed} onOpenChange={setIsZoomed}>
