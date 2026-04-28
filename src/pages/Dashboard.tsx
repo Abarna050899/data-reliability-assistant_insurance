@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSavedRules } from "@/contexts/SavedRulesContext";
 import { useUploadedColumns } from "@/contexts/UploadedColumnsContext";
-import { syntheticTestData, dataReliabilityCheckData } from "@/data/syntheticData";
+import { syntheticTestData, dataReliabilityCheckData, recommendedDQRules } from "@/data/syntheticData";
 import AppHeader from "@/components/AppHeader";
 import AppSidebar from "@/components/AppSidebar";
 import AppFooter from "@/components/AppFooter";
@@ -241,7 +241,7 @@ const Dashboard = () => {
     data_type: row.data_type,
     null_check_eligibility: row.null_check_eligibility,
     format_check: row.format_check,
-    rule_name: selectedColumns.includes(row.column_name) ? "Yes" : "No",
+    rule_applied: selectedColumns.includes(row.column_name) ? "Yes" : "-",
   }));
 
   // Get executor rules for the popup — must be Active AND have Executor permission
@@ -470,7 +470,7 @@ const Dashboard = () => {
                                 }}
                               >
                                 <Eye className="w-4 h-4" />
-                                View Saved Rules
+                                View Recommended Rules
                               </Button>
                               <Button
                                 className="gap-2 bg-red-600 text-white hover:bg-red-700"
