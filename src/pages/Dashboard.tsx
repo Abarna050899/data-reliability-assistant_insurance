@@ -541,7 +541,7 @@ const Dashboard = () => {
 
       {/* Recommended Rules Dialog */}
       <Dialog open={showSavedRulesDialog} onOpenChange={setShowSavedRulesDialog}>
-        <DialogContent className="max-w-3xl bg-white text-black border border-gray-200">
+        <DialogContent className="max-w-3xl bg-white text-black border border-gray-200 max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-black">Recommended Data Quality Rules</DialogTitle>
           </DialogHeader>
