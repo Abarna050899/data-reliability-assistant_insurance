@@ -244,11 +244,7 @@ const Dashboard = () => {
     rule_applied: selectedColumns.includes(row.column_name) ? "Yes" : "-",
   }));
 
-  // Get executor rules for the popup — must be Active AND have Executor permission
-  const executorRules = savedRules.filter((rule) =>
-    rule.status === "Active" &&
-    rule.permissions.some((p) => p.role === "Executor")
-  );
+  // (executor rules dialog replaced by recommended rules dialog)
 
   // Delete rule handler
   const handleDeleteRule = () => {
