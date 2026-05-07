@@ -245,31 +245,39 @@ const Dashboard = () => {
     rule_applied: selectedColumns.includes(row.column_name) ? "Yes" : "-",
   }));
 
-  // (executor rules dialog replaced by recommended rules dialog)
-
-  // Delete rule handler
-  const handleDeleteRule = () => {
-    if (!selectedExecutorRuleId) {
-      toast({ title: "No rule selected", description: "Please open View Saved Rules and select a rule first.", variant: "destructive" });
-      return;
-    }
-    const ruleName = savedRules.find(r => r.id === selectedExecutorRuleId)?.ruleName;
-    setSavedRules(prev => prev.filter(r => r.id !== selectedExecutorRuleId));
-    setSelectedExecutorRuleId(null);
-    toast({ title: "Rule deleted", description: `Rule "${ruleName}" has been deleted.` });
+  // View Recommended Rules dialog handlers
+  const handleOpenRulesDialog = () => {
+    setTempSelectedRuleIds([...selectedRuleIds]);
+    setTempDialogColumns([...selectedColumns]);
+    setShowColumnSelectInDialog(false);
+    setShowSavedRulesDialog(true);
   };
 
-  // View Saved Rules dialog column select handlers
   const handleOpenColumnSelect = () => {
     setTempDialogColumns([...selectedColumns]);
     setShowColumnSelectInDialog(true);
   };
 
-  const handleDialogColumnApply = () => {
+  const handleSelectAllColumns = () => {
+    if (tempDialogColumns.length === allColumnNames.length) {
+      setTempDialogColumns([]);
+    } else {
+      setTempDialogColumns([...allColumnNames]);
+    }
+  };
+
+  const handleToggleRule = (ruleId: string) => {
+    setTempSelectedRuleIds(prev =>
+      prev.includes(ruleId) ? prev.filter(id => id !== ruleId) : [...prev, ruleId]
+    );
+  };
+
+  const handleApply = () => {
+    setSelectedRuleIds([...tempSelectedRuleIds]);
     setSelectedColumns([...tempDialogColumns]);
     setShowColumnSelectInDialog(false);
     setShowSavedRulesDialog(false);
-    toast({ title: "Columns applied", description: "Column selections have been updated." });
+    toast({ title: "Applied", description: "Selected rules and columns have been applied." });
   };
 
   const handleDialogCancel = () => {
