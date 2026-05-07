@@ -562,17 +562,14 @@ const Dashboard = () => {
                       key={rule.id}
                       className={cn(
                         "hover:bg-gray-50 cursor-pointer",
-                        selectedExecutorRuleId === rule.id && "bg-blue-50"
+                        tempSelectedRuleIds.includes(rule.id) && "bg-blue-50"
                       )}
-                      onClick={() => setSelectedExecutorRuleId(rule.id)}
+                      onClick={() => handleToggleRule(rule.id)}
                     >
                       <TableCell>
-                        <input
-                          type="radio"
-                          name="executor-rule"
-                          checked={selectedExecutorRuleId === rule.id}
-                          onChange={() => setSelectedExecutorRuleId(rule.id)}
-                          className="w-4 h-4"
+                        <Checkbox
+                          checked={tempSelectedRuleIds.includes(rule.id)}
+                          onCheckedChange={() => handleToggleRule(rule.id)}
                         />
                       </TableCell>
                       <TableCell className="font-medium text-black">{rule.ruleName}</TableCell>
