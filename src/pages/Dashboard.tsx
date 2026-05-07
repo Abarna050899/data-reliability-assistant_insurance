@@ -97,8 +97,9 @@ const Dashboard = () => {
   // Column selection for Rule Name column
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
 
-  // View Saved Rules dialog state
-  const [selectedExecutorRuleId, setSelectedExecutorRuleId] = useState<string | null>(null);
+  // View Saved Rules dialog state — multi-select rules
+  const [selectedRuleIds, setSelectedRuleIds] = useState<string[]>([]);
+  const [tempSelectedRuleIds, setTempSelectedRuleIds] = useState<string[]>([]);
   const [showColumnSelectInDialog, setShowColumnSelectInDialog] = useState(false);
   const [tempDialogColumns, setTempDialogColumns] = useState<string[]>([]);
 
