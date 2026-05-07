@@ -97,8 +97,9 @@ const Dashboard = () => {
   // Column selection for Rule Name column
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
 
-  // View Saved Rules dialog state
-  const [selectedExecutorRuleId, setSelectedExecutorRuleId] = useState<string | null>(null);
+  // View Saved Rules dialog state — multi-select rules
+  const [selectedRuleIds, setSelectedRuleIds] = useState<string[]>([]);
+  const [tempSelectedRuleIds, setTempSelectedRuleIds] = useState<string[]>([]);
   const [showColumnSelectInDialog, setShowColumnSelectInDialog] = useState(false);
   const [tempDialogColumns, setTempDialogColumns] = useState<string[]>([]);
 
@@ -244,31 +245,40 @@ const Dashboard = () => {
     rule_applied: selectedColumns.includes(row.column_name) ? "Yes" : "-",
   }));
 
-  // (executor rules dialog replaced by recommended rules dialog)
-
-  // Delete rule handler
-  const handleDeleteRule = () => {
-    if (!selectedExecutorRuleId) {
-      toast({ title: "No rule selected", description: "Please open View Saved Rules and select a rule first.", variant: "destructive" });
-      return;
-    }
-    const ruleName = savedRules.find(r => r.id === selectedExecutorRuleId)?.ruleName;
-    setSavedRules(prev => prev.filter(r => r.id !== selectedExecutorRuleId));
-    setSelectedExecutorRuleId(null);
-    toast({ title: "Rule deleted", description: `Rule "${ruleName}" has been deleted.` });
+  // View Recommended Rules dialog handlers
+  const handleOpenRulesDialog = () => {
+    setTempSelectedRuleIds([...selectedRuleIds]);
+    setTempDialogColumns([...selectedColumns]);
+    setShowColumnSelectInDialog(false);
+    setShowSavedRulesDialog(true);
   };
 
-  // View Saved Rules dialog column select handlers
   const handleOpenColumnSelect = () => {
     setTempDialogColumns([...selectedColumns]);
     setShowColumnSelectInDialog(true);
   };
 
-  const handleDialogColumnApply = () => {
+  const handleSelectAllColumns = () => {
+    setShowColumnSelectInDialog(true);
+    if (tempDialogColumns.length === allColumnNames.length) {
+      setTempDialogColumns([]);
+    } else {
+      setTempDialogColumns([...allColumnNames]);
+    }
+  };
+
+  const handleToggleRule = (ruleId: string) => {
+    setTempSelectedRuleIds(prev =>
+      prev.includes(ruleId) ? prev.filter(id => id !== ruleId) : [...prev, ruleId]
+    );
+  };
+
+  const handleApply = () => {
+    setSelectedRuleIds([...tempSelectedRuleIds]);
     setSelectedColumns([...tempDialogColumns]);
     setShowColumnSelectInDialog(false);
     setShowSavedRulesDialog(false);
-    toast({ title: "Columns applied", description: "Column selections have been updated." });
+    toast({ title: "Applied", description: "Selected rules and columns have been applied." });
   };
 
   const handleDialogCancel = () => {
@@ -441,7 +451,7 @@ const Dashboard = () => {
                                 <div className="flex items-center gap-2 mt-3 p-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
                                   <ShieldAlert className="w-4 h-4 text-amber-600 flex-shrink-0" />
                                   <span>
-                                    <strong>PII Detected:</strong> Columns highlighted in amber contain Personally Identifiable Information (customer_id, age, account_created_date, emotion, Post, URL). To mask PII data in downloads, use the query: <em>"mask the PII data for download"</em>.
+                                    <strong>PII Detected:</strong> Columns highlighted in amber contain Personally Identifiable Information (Member Id, Age, Gender, City, Marital Status, Income Band, Dependents Count). To mask PII data in downloads, use the query: <em>"mask the PII data for download"</em>.
                                   </span>
                                 </div>
                               </CardContent>
@@ -456,24 +466,14 @@ const Dashboard = () => {
                               </CardContent>
                             </Card>
 
-                            {/* Action Buttons: View Saved Rules, Delete */}
+                            {/* Action Buttons: View Recommended Rules */}
                             <div className="flex items-center gap-3 mt-4">
                               <Button
                                 className="gap-2 bg-blue-600 text-white hover:bg-blue-700"
-                                onClick={() => {
-                                  setShowColumnSelectInDialog(false);
-                                  setShowSavedRulesDialog(true);
-                                }}
+                                onClick={handleOpenRulesDialog}
                               >
                                 <Eye className="w-4 h-4" />
                                 View Recommended Rules
-                              </Button>
-                              <Button
-                                className="gap-2 bg-red-600 text-white hover:bg-red-700"
-                                onClick={handleDeleteRule}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                                Delete
                               </Button>
                             </div>
                           </>
@@ -563,17 +563,14 @@ const Dashboard = () => {
                       key={rule.id}
                       className={cn(
                         "hover:bg-gray-50 cursor-pointer",
-                        selectedExecutorRuleId === rule.id && "bg-blue-50"
+                        tempSelectedRuleIds.includes(rule.id) && "bg-blue-50"
                       )}
-                      onClick={() => setSelectedExecutorRuleId(rule.id)}
+                      onClick={() => handleToggleRule(rule.id)}
                     >
                       <TableCell>
-                        <input
-                          type="radio"
-                          name="executor-rule"
-                          checked={selectedExecutorRuleId === rule.id}
-                          onChange={() => setSelectedExecutorRuleId(rule.id)}
-                          className="w-4 h-4"
+                        <Checkbox
+                          checked={tempSelectedRuleIds.includes(rule.id)}
+                          onCheckedChange={() => handleToggleRule(rule.id)}
                         />
                       </TableCell>
                       <TableCell className="font-medium text-black">{rule.ruleName}</TableCell>
@@ -617,18 +614,11 @@ const Dashboard = () => {
             </Button>
             <Button
               className="bg-blue-600 text-white hover:bg-blue-700"
-              onClick={() => {
-                setSelectedColumns([...allColumnNames]);
-                setShowColumnSelectInDialog(false);
-                setShowSavedRulesDialog(false);
-                toast({ title: "All columns selected", description: "Rule Applied set to Yes for all columns." });
-              }}
+              onClick={handleSelectAllColumns}
             >
               Select All
             </Button>
-            <Button
-              onClick={showColumnSelectInDialog ? handleDialogColumnApply : handleDialogCancel}
-            >
+            <Button onClick={handleApply}>
               Apply
             </Button>
             <Button

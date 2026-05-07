@@ -4,9 +4,11 @@
 const PII_COLUMN_PATTERNS: string[] = [
   "member_id",
   "age",
-  "last_app_login_date",
+  "gender",
   "city",
-  "last_claim_date",
+  "marital_status",
+  "income_band",
+  "dependents_count",
 ];
 
 /**
@@ -40,18 +42,17 @@ export function maskPIIValue(value: unknown, columnName: string): string {
     return strValue.substring(0, 1) + "***";
   }
 
-  if (lower === "age") {
+  if (lower === "age" || lower === "dependents_count") {
     return "**";
   }
 
-  if (lower === "city") {
-    if (strValue.length <= 2) return "**";
-    return strValue.substring(0, 2) + "***";
+  if (lower === "gender") {
+    return "*";
   }
 
-  if (lower === "last_app_login_date" || lower === "last_claim_date") {
-    const yearMatch = strValue.match(/^\d{4}/);
-    return yearMatch ? `${yearMatch[0]}-**-**` : "****-**-**";
+  if (lower === "city" || lower === "marital_status" || lower === "income_band") {
+    if (strValue.length <= 2) return "**";
+    return strValue.substring(0, 2) + "***";
   }
 
   // Generic masking
