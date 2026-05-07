@@ -259,6 +259,7 @@ const Dashboard = () => {
   };
 
   const handleSelectAllColumns = () => {
+    setShowColumnSelectInDialog(true);
     if (tempDialogColumns.length === allColumnNames.length) {
       setTempDialogColumns([]);
     } else {
