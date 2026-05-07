@@ -613,18 +613,11 @@ const Dashboard = () => {
             </Button>
             <Button
               className="bg-blue-600 text-white hover:bg-blue-700"
-              onClick={() => {
-                setSelectedColumns([...allColumnNames]);
-                setShowColumnSelectInDialog(false);
-                setShowSavedRulesDialog(false);
-                toast({ title: "All columns selected", description: "Rule Applied set to Yes for all columns." });
-              }}
+              onClick={handleSelectAllColumns}
             >
               Select All
             </Button>
-            <Button
-              onClick={showColumnSelectInDialog ? handleDialogColumnApply : handleDialogCancel}
-            >
+            <Button onClick={handleApply}>
               Apply
             </Button>
             <Button
