@@ -247,4 +247,5 @@ export const recommendedDQRules = [
   { id: "rec-missing-values", ruleName: "Missing Values Check", dqDimension: "Completeness" },
   { id: "rec-date-format", ruleName: "Date Format Check", dqDimension: "Validity" },
   { id: "rec-negative-values", ruleName: "Negative Values Check", dqDimension: "Validity" },
+  { id: "rec-range-validation", ruleName: "Range Validation Check", dqDimension: "Accuracy" },
 ];
