@@ -51,7 +51,7 @@ export function maskPIIValue(value: unknown, columnName: string): string {
     return "*";
   }
 
-  if (lower === "city" || lower === "marital_status" || lower === "income_band") {
+  if (lower === "city" || lower === "marital_status" || lower === "last_app_login_date" || lower === "last_claim_date") {
     if (strValue.length <= 2) return "**";
     return strValue.substring(0, 2) + "***";
   }
