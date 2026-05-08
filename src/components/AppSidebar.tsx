@@ -159,7 +159,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-card border-border">
-                  <p>Rule Configurator</p>
+                  <p>Rule Engine</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
