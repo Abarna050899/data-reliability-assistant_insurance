@@ -141,7 +141,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
             </>
           )}
 
-          {/* Rule Configurator */}
+          {/* Rule Engine */}
           {isCollapsed ? (
             <TooltipProvider delayDuration={0}>
               <Tooltip>
