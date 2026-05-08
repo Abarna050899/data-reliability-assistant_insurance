@@ -3,11 +3,12 @@
 // Column names that are considered PII for insurance/vitality data
 const PII_COLUMN_PATTERNS: string[] = [
   "member_id",
+  "last_app_login_date",
+  "last_claim_date",
   "age",
   "gender",
   "city",
   "marital_status",
-  "income_band",
   "dependents_count",
 ];
 
