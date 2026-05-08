@@ -338,7 +338,7 @@ const RuleConfigurator = () => {
         <Card className="shadow-sm">
           <CardHeader className="pb-4">
             <CardTitle className="text-lg">
-              {editingRuleId ? "Edit Rule" : "Rule Configurator"}
+              {editingRuleId ? "Edit Rule" : "Rule Engine"}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
