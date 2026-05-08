@@ -141,7 +141,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
             </>
           )}
 
-          {/* Rule Configurator */}
+          {/* Rule Engine */}
           {isCollapsed ? (
             <TooltipProvider delayDuration={0}>
               <Tooltip>
@@ -159,7 +159,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right" className="bg-card border-border">
-                  <p>Rule Configurator</p>
+                  <p>Rule Engine</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -175,7 +175,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
                 )}
               >
                 <Settings2 className="w-4 h-4" />
-                <span className="flex-1 text-left whitespace-nowrap">Rule Configurator</span>
+                <span className="flex-1 text-left whitespace-nowrap">Rule Engine</span>
               </button>
             )
           )}

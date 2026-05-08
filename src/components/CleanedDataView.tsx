@@ -19,12 +19,61 @@ interface CleanedDataViewProps {
 const CleanedDataView = ({ originalData, maskPIIDownload = false }: CleanedDataViewProps) => {
   const [downloadFormat, setDownloadFormat] = useState<string>("CSV");
 
-  // Clean data: remove rows with null/empty values
-  const cleanedData = originalData.filter((row) => {
-    return Object.values(row).every(
-      (value) => value !== null && value !== undefined && value !== ""
-    );
-  });
+  // Comprehensive cleaning (Pandas-equivalent in browser):
+  //  - drop rows with null / missing (NaN/empty) values
+  //  - drop rows with negative numeric values (e.g., negative age)
+  //  - drop rows with invalid date formats in *_date columns
+  //  - drop duplicate records based on member_id / customer_id
+  const isDateColumn = (col: string) => /(_date$|date$)/i.test(col);
+  const isValidDate = (v: unknown) => {
+    if (v === null || v === undefined || v === "") return false;
+    const s = String(v);
+    if (!/^\d{4}-\d{2}-\d{2}/.test(s)) return false;
+    const d = new Date(s);
+    return !isNaN(d.getTime());
+  };
+
+  const noNullsOrMissing = originalData.filter((row) =>
+    Object.values(row).every(
+      (value) =>
+        value !== null &&
+        value !== undefined &&
+        !(typeof value === "string" && value.trim() === "") &&
+        !(typeof value === "number" && Number.isNaN(value))
+    )
+  );
+
+  const noNegatives = noNullsOrMissing.filter((row) =>
+    Object.values(row).every(
+      (value) => !(typeof value === "number" && value < 0)
+    )
+  );
+
+  const validDates = noNegatives.filter((row) =>
+    Object.entries(row).every(([col, value]) =>
+      isDateColumn(col) ? isValidDate(value) : true
+    )
+  );
+
+  // Deduplicate by member_id (or customer_id) when present
+  const dedupKey =
+    validDates[0] && "member_id" in validDates[0]
+      ? "member_id"
+      : validDates[0] && "customer_id" in validDates[0]
+      ? "customer_id"
+      : null;
+
+  const seen = new Set<string>();
+  const cleanedData = dedupKey
+    ? validDates.filter((row) => {
+        const k = String((row as Record<string, unknown>)[dedupKey]);
+        if (seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      })
+    : validDates;
+
+  const removedCount = originalData.length - cleanedData.length;
 
   const handleDownload = () => {
     const columns = Object.keys(cleanedData[0] || {});
@@ -79,9 +128,15 @@ const CleanedDataView = ({ originalData, maskPIIDownload = false }: CleanedDataV
 
   return (
     <div className="space-y-4">
-      <div className="p-4 bg-green-50 border border-green-300 rounded-lg">
+      <div className="p-4 bg-green-50 border border-green-300 rounded-lg space-y-1">
         <p className="text-sm text-gray-800 font-medium">
-          Removed rows with null values. Cleaned data preview ({cleanedData.length} of {originalData.length} rows)
+          {removedCount} rows are removed out of {originalData.length.toLocaleString()} rows
+        </p>
+        <p className="text-xs text-gray-600">
+          Removed: nulls, missing values, negative values, invalid date formats and duplicate records (Pandas-equivalent cleaning).
+        </p>
+        <p className="text-xs text-gray-600">
+          Cleaned data preview ({cleanedData.length} of {originalData.length} rows)
         </p>
       </div>
 
