@@ -175,7 +175,7 @@ const AppSidebar = ({ activeView, onViewChange }: AppSidebarProps) => {
                 )}
               >
                 <Settings2 className="w-4 h-4" />
-                <span className="flex-1 text-left whitespace-nowrap">Rule Configurator</span>
+                <span className="flex-1 text-left whitespace-nowrap">Rule Engine</span>
               </button>
             )
           )}
