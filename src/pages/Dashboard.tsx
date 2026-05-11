@@ -126,7 +126,12 @@ const Dashboard = () => {
       return "kpi_report";
     } else if (lowerQuery.startsWith("please remove records") || lowerQuery.includes("remove null") || lowerQuery.includes("clean data")) {
       return "clean_data";
-    } else if (lowerQuery.includes("mask") && lowerQuery.includes("pii")) {
+    } else if (
+      (lowerQuery.includes("mask") && (lowerQuery.includes("pii") || lowerQuery.includes("personal"))) ||
+      lowerQuery.includes("hide personal info") ||
+      lowerQuery.includes("hide pii") ||
+      (lowerQuery.includes("mask") && lowerQuery.includes("sensitive"))
+    ) {
       return "mask_pii";
     }
     return "preview";
