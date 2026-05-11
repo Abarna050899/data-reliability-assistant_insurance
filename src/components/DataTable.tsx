@@ -31,12 +31,13 @@ interface DataTableProps {
   className?: string;
   highlightPII?: boolean;
   maskPIIDownload?: boolean;
+  maskPIIPreview?: boolean;
 }
 
 const PAGE_SIZE = 100;
 const TOTAL_RECORDS_DISPLAY = 1_000_000;
 
-const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownload = false }: DataTableProps) => {
+const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownload = false, maskPIIPreview = false }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
@@ -141,8 +142,8 @@ const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownlo
                           {row[col] === null || row[col] === undefined ? (
                             <span className="text-red-500 italic text-sm">null</span>
                           ) : (
-                            <span className="block truncate" title={String(row[col])}>
-                              {String(row[col])}
+                            <span className="block truncate" title={maskPIIPreview && isPII ? String(maskPIIValue(row[col], col)) : String(row[col])}>
+                              {maskPIIPreview && isPII ? maskPIIValue(row[col], col) : String(row[col])}
                             </span>
                           )}
                         </TableCell>

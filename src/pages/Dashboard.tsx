@@ -126,7 +126,12 @@ const Dashboard = () => {
       return "kpi_report";
     } else if (lowerQuery.startsWith("please remove records") || lowerQuery.includes("remove null") || lowerQuery.includes("clean data")) {
       return "clean_data";
-    } else if (lowerQuery.includes("mask") && lowerQuery.includes("pii")) {
+    } else if (
+      (lowerQuery.includes("mask") && (lowerQuery.includes("pii") || lowerQuery.includes("personal"))) ||
+      lowerQuery.includes("hide personal info") ||
+      lowerQuery.includes("hide pii") ||
+      (lowerQuery.includes("mask") && lowerQuery.includes("sensitive"))
+    ) {
       return "mask_pii";
     }
     return "preview";
@@ -512,15 +517,16 @@ const Dashboard = () => {
                             <Card className="shadow-sm border border-gray-200 bg-white">
                               <CardContent className="pt-6">
                                 <DataTable
-                                  title="Cleaned Data Preview (PII Masked for Download)"
+                                  title="Cleaned Data Preview (PII Masked)"
                                   data={cleanedData}
                                   highlightPII
+                                  maskPIIPreview
                                   maskPIIDownload
                                 />
                                 <div className="flex items-center gap-2 mt-3 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-800">
                                   <ShieldAlert className="w-4 h-4 text-green-600 flex-shrink-0" />
                                   <span>
-                                    <strong>PII Masking Active:</strong> All PII columns will be masked when you download data from this view.
+                                    <strong>PII Masking Active:</strong> All PII columns are masked in the preview above and in any downloads from this view.
                                   </span>
                                 </div>
                                 <PiiDownloadControls data={cleanedData} />
