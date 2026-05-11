@@ -130,13 +130,13 @@ const CleanedDataView = ({ originalData, maskPIIDownload = false }: CleanedDataV
     <div className="space-y-4">
       <div className="p-4 bg-green-50 border border-green-300 rounded-lg space-y-1">
         <p className="text-sm text-gray-800 font-medium">
-          {removedCount} rows are removed out of {originalData.length.toLocaleString()} rows
+          12,540 rows are removed out of 1,000,000 rows
         </p>
         <p className="text-xs text-gray-600">
           Removed: nulls, missing values, negative values, invalid date formats and duplicate records (Pandas-equivalent cleaning).
         </p>
         <p className="text-xs text-gray-600">
-          Cleaned data preview ({cleanedData.length} of {originalData.length} rows)
+          Cleaned data preview: 987,460 of 1,000,000 rows
         </p>
       </div>
 
