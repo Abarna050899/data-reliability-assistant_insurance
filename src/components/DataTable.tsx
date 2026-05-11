@@ -31,12 +31,13 @@ interface DataTableProps {
   className?: string;
   highlightPII?: boolean;
   maskPIIDownload?: boolean;
+  maskPIIPreview?: boolean;
 }
 
 const PAGE_SIZE = 100;
 const TOTAL_RECORDS_DISPLAY = 1_000_000;
 
-const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownload = false }: DataTableProps) => {
+const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownload = false, maskPIIPreview = false }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
