@@ -38,7 +38,7 @@ interface DataTableProps {
 const PAGE_SIZE = 100;
 const TOTAL_RECORDS_DISPLAY = 1_000_000;
 
-const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownload = false, maskPIIPreview = false }: DataTableProps) => {
+const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownload = false, maskPIIPreview = false, hideRecordCount = false }: DataTableProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
