@@ -32,6 +32,7 @@ interface DataTableProps {
   highlightPII?: boolean;
   maskPIIDownload?: boolean;
   maskPIIPreview?: boolean;
+  hideRecordCount?: boolean;
 }
 
 const PAGE_SIZE = 100;
