@@ -59,7 +59,7 @@ const ReliabilityKPIReport = ({
 
   return (
     <div className="space-y-4">
-      <DataTable title={title} data={tableData} />
+      <DataTable title={title} data={tableData} hideRecordCount />
       <Button onClick={() => setShowDQReport(true)} className="gap-2">
         <Eye className="w-4 h-4" />
         View Data Reliability Report
