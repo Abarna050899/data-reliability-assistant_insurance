@@ -219,9 +219,11 @@ const DataTable = ({ title, data, className, highlightPII = false, maskPIIDownlo
             <Download className="w-4 h-4" />
           </Button>
 
-          <span className="text-xs text-muted-foreground ml-2">
-            {displayCount} of {displayTotal} records
-          </span>
+          {!hideRecordCount && (
+            <span className="text-xs text-muted-foreground ml-2">
+              {displayCount} of {displayTotal} records
+            </span>
+          )}
         </div>
       </div>
 
